@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Subway Line Resume</title>
+<!-- EDIT THESE TWO LINES ONCE: this is what shows in browser tabs, search results and link previews -->
+<title>[Your Name] | Mechanical Engineering</title>
+<meta name="description" content="[Your Name], mechanical engineering student. Projects, experience and resume.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -173,7 +175,8 @@ footer .wrap > div{border-top:1px solid var(--rule);padding-top:18px}
 
 <footer><div class="wrap"><div id="foot"></div></div></footer>
 
-<script src="content.js"></script>
+<!-- Loads content.js fresh every visit, so your edits show up right away -->
+<script>document.write('<script src="content.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 (function(){
   "use strict";
