@@ -17,15 +17,11 @@
 window.SITE = {
 
   /* ---------- The basics ---------- */
-  name: "[Your Name]",
-  lineColor: "#EE6A1F",      // The color of your subway line, as a hex code. Try "#0F7A3D" (green) or "#1F5FBF" (blue).
-  major: "Mechanical Engineering",
-  school: "[Your University]",
-  classOf: "Class of [20XX]",
-  bio: "Mechanical engineering student from New York, working toward bringing high-speed rail to the US and strengthening American manufacturing. [Add a sentence or two about what you're working on now and what you're looking for.]",
+  name: "Darren Ke",
+  lineColor: "#1F5FBF",      
+  bio: "Junior at Yale University studying Mechanical Engineering. Passionate about transportation, material science, and defense.",
 
-  resumePdf: "resume.pdf",   // Upload your resume to GitHub with this exact name, or set to "" to hide the button.
-  email: "[you@example.com]",
+  //resumePdf: "resume.pdf",   
   links: [
     { label: "LinkedIn", url: "https://www.linkedin.com/in/[your-profile]" },
     { label: "GitHub",   url: "https://github.com/[yourusername]" }
@@ -36,42 +32,24 @@ window.SITE = {
      rename them, or delete one to remove that section from the site. */
   stations: [
     { id: "about",      label: "About",      short: "About" },
+    { id: "education",  label: "Education",  short: "School" },
     { id: "experience", label: "Experience", short: "Work" },
     { id: "projects",   label: "Projects",   short: "Projects" },
     { id: "skills",     label: "Skills",     short: "Skills" },
-    { id: "education",  label: "Education",  short: "School" },
     { id: "contact",    label: "Contact",    short: "Contact" }
   ],
 
-  /* ---------- Experience (newest first) ---------- */
+  /* ---------- Experience ---------- */
   experience: [
     {
-      title: "[Your role]",
-      org: "Schwarz Lab, [Department]",
+      title: "Project Researcher",
+      org: "Nanoprobe Lab",
       dates: "Fall 2026 – Present",
       points: [
-        "[What you do in the lab, in one line]",
-        "[A result, skill or tool you used]"
+        "Conducting high speed impact testing",
+        "CAD, Materials Science, LaVIEW"
       ]
     },
-    {
-      title: "Summer Study Abroad",
-      org: "Greece",
-      dates: "Summer [20XX] · 2 months",
-      points: [
-        "Studied political science, economics and climate change alongside American students from other universities",
-        "Started in Athens, then traveled to other cities and islands across Greece"
-      ]
-    },
-    {
-      title: "[Internship or job title]",
-      org: "[Company], [City]",
-      dates: "[Month Year] – [Month Year]",
-      points: [
-        "[What you built, tested or improved]",
-        "[A number if you have one: time saved, parts made, cost cut]"
-      ]
-    }
   ],
 
   /* ---------- Projects ----------
@@ -79,43 +57,16 @@ window.SITE = {
      "image" is a file you upload, like "images/gearbox.jpg". Leave "" for now. */
   projects: [
     {
-      title: "[Example] Bogie suspension model",
-      summary: "[One sentence on what it is and why it matters.]",
+      title: "Foot Operated Kitchen Knife",
+      summary: "MENG 1105 Final Project",
       tags: ["SolidWorks", "FEA"],
       image: "",
-      role: "[Your role, team size, timeframe]",
       points: [
-        "[What you designed or analyzed]",
-        "[The result or what you learned]"
+        "Foot Actuated Kitchen Knife intended for those with arthritis",
+        "CAD, FMEA, DFA"
       ],
       links: []
     },
-    {
-      title: "[Example] Wind tunnel test rig",
-      summary: "[One sentence on what it is and why it matters.]",
-      tags: ["Fluids", "Arduino"],
-      image: "",
-      role: "[Your role, team size, timeframe]",
-      points: [
-        "[What you built]",
-        "[How you tested it]"
-      ],
-      links: []
-    },
-    {
-      title: "[Example] Machined tool holder",
-      summary: "[One sentence on what it is and why it matters.]",
-      tags: ["Machining", "SolidWorks"],
-      image: "",
-      role: "[Your role, team size, timeframe]",
-      points: [
-        "[Process you used: mill, lathe, CNC]",
-        "[Tolerances or how it performed]"
-      ],
-      links: [
-        { label: "[Report PDF]", url: "#" }
-      ]
-    }
   ],
 
   /* ---------- Skills (grouped) ---------- */
@@ -129,14 +80,14 @@ window.SITE = {
   /* ---------- Education ---------- */
   education: [
     {
-      school: "[Your University]",
+      school: "Yale University",
       degree: "B.S. Mechanical Engineering",
-      dates: "[20XX] – [20XX]",
-      details: ["GPA: [x.xx]", "[Honors, clubs or teams]"],
-      courses: ["Fluid Mechanics", "MENG 3125 [course title]", "Intro to Environmental Engineering"]
+      dates: "[2024] – [2028]",
+      details: ["GPA: [3.67]"],
+      courses: ["Fluid Mechanics", "Intro to Environmental Engineering"]
     }
   ],
 
   /* ---------- Contact ---------- */
-  contactNote: "[Open to summer 20XX internships in rail and manufacturing.]"
+  contactNote: "[Open to summer 2027 internships.]"
 };
