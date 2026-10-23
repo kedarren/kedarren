@@ -3,158 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
-<style>
-/* Layout: sticky strip map with a running train on top; below, one subway line runs down the left and every section heading is a station on it. Single light theme on white by choice. */
-:root{
-  --bg:#ffffff; --fg:#141517; --muted:#5d6166; --rule:#e2e4e6; --soft:#f4f5f6;
-  --line:#ee6a1f;
-  --steel-hi:#f3f5f6; --steel:#cfd4d8; --steel-lo:#b4babf; --steel-edge:#868c92; --door:#a3a9ae;
-  --glass:#1f252a; --under:#2a2d31; --lit:#fbf3d6; --lamp:#fff6d8;
-  --font:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --max:1040px;
-  --indent:58px; --rail-x:14px;
-  color-scheme:light;
+<!-- What search engines and link previews show. Edit these if your name or focus changes. -->
+<title>Darren Ke | Mechanical Engineering at Yale</title>
+<meta name="description" content="Projects, research, experience and coursework from Darren Ke, a mechanical engineering student at Yale who designs and builds things, especially for transportation.">
+<meta name="author" content="Darren Ke">
+<link rel="canonical" href="https://darrenke.com/">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Darren Ke">
+<meta property="og:title" content="Darren Ke | Mechanical Engineering at Yale">
+<meta property="og:description" content="Projects, research and experience from a Yale mechanical engineering student who designs and builds things, especially for transportation.">
+<meta property="og:url" content="https://darrenke.com/">
+<meta property="og:image" content="https://darrenke.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Darren Ke, Mechanical Engineering, Yale University, on a blue subway line.">
+<meta property="profile:first_name" content="Darren">
+<meta property="profile:last_name" content="Ke">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<script src="/content.js" defer></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "url": "https://darrenke.com/",
+  "mainEntity": {
+    "@type": "Person",
+    "name": "Darren Ke",
+    "url": "https://darrenke.com/",
+    "email": "mailto:darren.ke@yale.edu",
+    "description": "Mechanical engineering student at Yale University.",
+    "affiliation": { "@type": "CollegeOrUniversity", "name": "Yale University", "url": "https://www.yale.edu/" },
+    "knowsAbout": ["Mechanical engineering", "Mechanical design", "CAD", "Manufacturing", "Materials science", "Rail transportation"],
+    "sameAs": ["https://www.linkedin.com/in/darrenke"]
+  }
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;background:var(--bg)}
-@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
-a{color:inherit}
-:focus-visible{outline:3px solid var(--line);outline-offset:2px;border-radius:4px}
-.wrap{max-width:var(--max);margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
-
-/* ---------- Strip map header ---------- */
-.strip{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
-.strip .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding-block:6px}
-.map{position:relative;height:66px;min-width:0;--n:6}
-.rails{position:absolute;left:0;right:0;top:25px;height:2px;background:repeating-linear-gradient(90deg,var(--steel-lo) 0 7px,transparent 7px 10px)}
-.route{position:absolute;top:34px;height:6px;left:calc(50% / var(--n));right:calc(50% / var(--n));background:var(--line);border-radius:3px}
-.train{position:absolute;top:0;left:0;width:150px;height:26px;will-change:transform;pointer-events:none}
-.train svg{display:block;width:100%;height:100%;overflow:visible}
-.train.flip svg{transform:scaleX(-1)}
-.t-body{fill:url(#steel);stroke:var(--steel-edge);stroke-width:.5}
-.t-roof{fill:var(--steel-lo)}
-.t-belt{stroke:var(--steel-lo);stroke-width:.35}
-.t-door{fill:var(--door);stroke:var(--steel-edge);stroke-width:.35;transition:fill .35s}
-.t-seam{stroke:var(--steel-edge);stroke-width:.35}
-.t-glass{fill:var(--glass);transition:fill .35s}
-.t-under{fill:var(--under)}
-.t-cab{fill:var(--glass)}
-.t-route{fill:var(--line)}
-.t-lamp{fill:var(--lamp)}
-.train.open .t-door{fill:var(--lit)}
-.train.open .t-door-glass{fill:var(--lit)}
-.stations{list-style:none;margin:0;padding:0;position:absolute;inset:0;display:flex}
-.stations li{flex:1;min-width:0}
-.station{display:flex;flex-direction:column;align-items:center;height:100%;padding-top:30px;text-decoration:none;color:var(--fg)}
-.station .dot{width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--fg);transition:transform .2s,background .2s}
-.station .name{margin-top:3px;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-variation-settings:"wdth" 80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:var(--muted)}
-.station .short{display:none}
-.station:hover .name{color:var(--fg)}
-.station[aria-current="true"] .dot{background:var(--line);transform:scale(1.25)}
-.station[aria-current="true"] .name{color:var(--fg)}
-.pause{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--rule);background:var(--bg);color:var(--fg);border-radius:999px;padding:7px 13px;font:600 13px/1 var(--font);cursor:pointer}
-.pause:hover{border-color:var(--fg)}
-.pause svg{width:12px;height:12px;fill:currentColor}
-
-/* ---------- The line down the page ---------- */
-.line-col{position:relative;padding-left:var(--indent);padding-block:8px 24px}
-.rail{position:absolute;left:calc(var(--rail-x) - 3px);width:6px;top:0;bottom:0;background:var(--line);border-radius:3px}
-.has-dot{position:relative}
-.st-dot{position:absolute;left:calc(var(--rail-x) - var(--indent) - 10px);top:.52em;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:var(--bg);border:4px solid var(--fg);transition:background .25s}
-.st-dot.on{background:var(--line)}
-.sm-dot{position:absolute;left:calc(var(--rail-x) - var(--indent) - 6px);top:.62em;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--fg)}
-
-h1,h2,h3{font-family:var(--font);text-wrap:balance}
-.stop{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 92px);padding-top:60px}
-.stop.about{padding-top:48px}
-.stop h2{margin:0 0 26px;font-size:clamp(28px,4vw,38px);line-height:1.05;font-weight:800;letter-spacing:-.01em}
-
-/* About */
-.about h1{margin:0 0 12px;font-size:clamp(40px,7vw,74px);line-height:1.02;font-weight:800;letter-spacing:-.015em}
-.sub{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:18px;font-weight:600;color:var(--muted)}
-.sub .sep{color:var(--rule)}
-.about p.bio{margin:24px 0 24px;max-width:62ch;font-size:19px;line-height:1.55;text-wrap:pretty}
-.actions{display:flex;flex-wrap:wrap;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:8px;border:2px solid var(--fg);padding:9px 16px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;color:var(--fg);background:transparent;cursor:pointer;font-family:var(--font)}
-.btn.primary,.btn:hover{background:var(--fg);color:var(--bg)}
-
-/* Experience */
-.jobs{list-style:none;margin:0;padding:0;display:grid;gap:28px}
-.jobs > li{min-width:0}
-.job-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px}
-.job-top h3{margin:0;font-size:20px;font-weight:800;line-height:1.25}
-.job-org{font-weight:600}
-.job-dates{margin-left:auto;color:var(--muted);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
-.jobs ul,.card ul{margin:8px 0 0;padding-left:18px;max-width:70ch}
-.jobs ul li,.card ul li{margin:3px 0}
-
-/* Projects */
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.chip{border:1.5px solid var(--fg);background:transparent;color:var(--fg);border-radius:999px;padding:6px 13px;font:600 13px/1.1 var(--font);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:18px;align-items:start}
-.card{background:var(--bg);border:1px solid var(--rule);border-radius:8px;overflow:hidden;min-width:0}
-.media{aspect-ratio:16/10;max-width:100%;display:grid;place-items:center;background:var(--soft);color:var(--muted);font-size:13px;font-weight:600;border-bottom:1px solid var(--rule)}
-.media img{width:100%;height:100%;object-fit:cover;display:block}
-.card-body{padding:16px 18px 18px;display:grid;gap:10px}
-.card h3{margin:0;font-size:19px;line-height:1.25;font-weight:800}
-.card p{margin:0}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-size:12px;font-weight:700;letter-spacing:.02em;padding:3px 9px;border-radius:999px;border:1px solid var(--rule);color:var(--muted)}
-.card details summary{cursor:pointer;font-weight:700;font-size:14px;list-style:none;display:inline-flex;align-items:center;gap:6px}
-.card details summary::-webkit-details-marker{display:none}
-.card details summary::after{content:"+";font-size:18px;line-height:1}
-.card details[open] summary::after{content:"–"}
-.card .role{margin-top:8px;color:var(--muted);font-size:14px;font-weight:600}
-.card .plinks{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-weight:700;font-size:14px}
-.empty{color:var(--muted)}
-
-/* Skills */
-.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:24px 32px}
-.skills h3{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:18px;font-weight:800}
-.skills h3::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--fg);flex:none}
-.skills ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.skills li{padding:5px 12px;border-radius:999px;border:1px solid var(--rule);font-size:14px;font-weight:600}
-
-/* Education */
-.edu{display:grid;gap:26px}
-.edu h3{margin:0;font-size:22px;font-weight:800;line-height:1.25}
-.edu .deg{font-weight:600;margin-top:2px}
-.edu .meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-weight:600;font-size:14px;margin-top:6px;font-variant-numeric:tabular-nums}
-.edu .lbl{margin:16px 0 8px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-
-/* Contact */
-.contact p{margin:0 0 18px;font-size:18px;max-width:60ch}
-.email-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:18px}
-.email{font-size:clamp(18px,3vw,24px);font-weight:800;user-select:all;overflow-wrap:anywhere}
-
-footer{padding-block:28px 36px;color:var(--muted);font-size:13px}
-footer .wrap > div{border-top:1px solid var(--rule);padding-top:18px}
-
-@media (max-width:760px){ .job-dates{margin-left:0;width:100%} }
-@media (max-width:600px){
-  :root{--indent:38px;--rail-x:9px}
-  .strip .wrap{gap:10px}
-  .pause .txt{display:none}
-  .pause{padding:9px}
-  .train{width:86px;height:15px;top:10px}
-  .station .long{display:none}
-  .station .short{display:inline}
-  .station .name{font-size:11px;letter-spacing:.01em}
-  .st-dot{width:18px;height:18px;border-width:3.5px;left:calc(var(--rail-x) - var(--indent) - 9px)}
-  .about p.bio{font-size:17px}
-}
-</style>
+</script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="strip">
   <div class="wrap">
-    <nav class="map" id="map" aria-label="Site sections">
+    <nav class="map" id="map" aria-label="Sections">
       <div class="rails" aria-hidden="true"></div>
       <div class="route" aria-hidden="true"></div>
       <div class="train" id="train" aria-hidden="true"></div>
@@ -167,309 +69,20 @@ footer .wrap > div{border-top:1px solid var(--rule);padding-top:18px}
   </div>
 </header>
 
-<main class="wrap"><div class="line-col" id="col"><div class="rail" id="rail" aria-hidden="true"></div></div></main>
+<main class="wrap" id="main" tabindex="-1">
+  <div class="line-col" id="col">
+    <div class="rail" id="rail" aria-hidden="true"></div>
+    <noscript>
+      <section class="stop about">
+        <h1>Darren Ke</h1>
+        <p class="bio">Mechanical engineering student at Yale University.</p>
+        <p><a href="mailto:darren.ke@yale.edu">darren.ke@yale.edu</a> · <a href="https://www.linkedin.com/in/darrenke">LinkedIn</a></p>
+        <p class="empty">Turn on JavaScript to see projects, research and coursework.</p>
+      </section>
+    </noscript>
+  </div>
+</main>
 
-<footer><div class="wrap"><div id="foot"></div></div></footer>
-
-<!-- Loads content.js fresh every visit, so your edits show up right away -->
-<script>document.write('<script src="content.js?v=' + Date.now() + '"><\/script>');</script>
-<script>
-(function(){
-  "use strict";
-  var S = window.SITE;
-  var col = document.getElementById("col");
-  if (!S) { col.insertAdjacentHTML("beforeend", '<h1>content.js didn\'t load</h1><p>Check that content.js is uploaded next to index.html and has no missing commas or quote marks.</p>'); return; }
-
-  /* ---------- tiny element helper ---------- */
-  function h(tag, attrs){
-    var e = document.createElement(tag);
-    if (attrs) Object.keys(attrs).forEach(function(k){
-      var v = attrs[k];
-      if (v == null || v === false) return;
-      if (k === "class") e.className = v;
-      else e.setAttribute(k, v === true ? "" : v);
-    });
-    for (var i = 2; i < arguments.length; i++) add(e, arguments[i]);
-    return e;
-  }
-  function add(e, k){
-    if (k == null || k === false) return;
-    if (Array.isArray(k)) { k.forEach(function(x){ add(e, x); }); return; }
-    e.append(k.nodeType ? k : document.createTextNode(String(k)));
-  }
-  function ext(url){ return /^https?:/i.test(url) ? { target: "_blank", rel: "noopener" } : {}; }
-  function link(l, cls){ return h("a", Object.assign({ href: l.url, class: cls || null }, ext(l.url)), l.label); }
-  var arr = function(x){ return Array.isArray(x) ? x : []; };
-
-  if (S.lineColor) document.documentElement.style.setProperty("--line", S.lineColor);
-  if (S.name && S.name.indexOf("[") !== 0) document.title = S.name;
-
-  var stations = arr(S.stations), N = stations.length;
-  var bigDots = [];
-  function dot(){ var d = h("span", { class: "st-dot", "aria-hidden": "true" }); bigDots.push(d); return d; }
-  function small(){ return h("span", { class: "sm-dot", "aria-hidden": "true" }); }
-  function heading(st){ return h("h2", { class: "has-dot" }, dot(), st.label); }
-  function section(st, cls){ var s = h("section", { class: "stop " + (cls || ""), id: st.id }); for (var i = 2; i < arguments.length; i++) add(s, arguments[i]); return s; }
-
-  /* ---------- sections ---------- */
-  var R = {
-    about: function(st){
-      return section(st, "about",
-        h("h1", { class: "has-dot" }, dot(), S.name || ""),
-        h("div", { class: "sub" },
-          S.major ? h("span", null, S.major) : null,
-          S.school ? [h("span", { class: "sep", "aria-hidden": "true" }, "/"), h("span", null, S.school)] : null,
-          S.classOf ? [h("span", { class: "sep", "aria-hidden": "true" }, "/"), h("span", null, S.classOf)] : null),
-        S.bio ? h("p", { class: "bio" }, S.bio) : null,
-        h("div", { class: "actions" },
-          S.resumePdf ? h("a", { class: "btn primary", href: S.resumePdf, target: "_blank", rel: "noopener" }, "Resume (PDF)") : null,
-          arr(S.links).map(function(l){ return link(l, "btn"); })));
-    },
-
-    experience: function(st){
-      return section(st, "", heading(st), h("ol", { class: "jobs" }, arr(S.experience).map(function(j){
-        return h("li", null,
-          h("div", { class: "job-top" },
-            h("h3", { class: "has-dot" }, small(), j.title || ""),
-            h("span", { class: "job-org" }, j.org || ""),
-            h("span", { class: "job-dates" }, j.dates || "")),
-          arr(j.points).length ? h("ul", null, arr(j.points).map(function(p){ return h("li", null, p); })) : null);
-      })));
-    },
-
-    projects: function(st){
-      var projects = arr(S.projects), tags = [];
-      projects.forEach(function(p){ arr(p.tags).forEach(function(t){ if (tags.indexOf(t) < 0) tags.push(t); }); });
-      var cards = projects.map(function(p){
-        var det = (arr(p.points).length || p.role || arr(p.links).length) ? h("details", null,
-          h("summary", null, "Details"),
-          p.role ? h("div", { class: "role" }, p.role) : null,
-          arr(p.points).length ? h("ul", null, arr(p.points).map(function(x){ return h("li", null, x); })) : null,
-          arr(p.links).length ? h("div", { class: "plinks" }, arr(p.links).map(function(l){ return link(l); })) : null) : null;
-        var card = h("article", { class: "card" },
-          h("div", { class: "media" }, p.image ? h("img", { src: p.image, alt: p.title || "", loading: "lazy" }) : "Add a photo"),
-          h("div", { class: "card-body" },
-            h("h3", null, p.title || ""),
-            p.summary ? h("p", null, p.summary) : null,
-            arr(p.tags).length ? h("div", { class: "tags" }, arr(p.tags).map(function(t){ return h("span", { class: "tag" }, t); })) : null,
-            det));
-        card._tags = arr(p.tags);
-        return card;
-      });
-      var filters = null;
-      if (tags.length > 1) {
-        var chips = [];
-        var mk = function(label, val){
-          var b = h("button", { class: "chip", type: "button", "aria-pressed": val === null ? "true" : "false" }, label);
-          b.addEventListener("click", function(){
-            chips.forEach(function(c){ c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
-            cards.forEach(function(c){ c.hidden = val !== null && c._tags.indexOf(val) < 0; });
-          });
-          chips.push(b); return b;
-        };
-        filters = h("div", { class: "filters", role: "group", "aria-label": "Filter projects by skill" }, mk("All", null), tags.map(function(t){ return mk(t, t); }));
-      }
-      return section(st, "", heading(st), filters, projects.length ? h("div", { class: "cards" }, cards) : h("p", { class: "empty" }, "Projects coming soon."));
-    },
-
-    skills: function(st){
-      return section(st, "", heading(st), h("div", { class: "skills" }, arr(S.skills).map(function(g){
-        return h("div", null, h("h3", null, g.group || ""), h("ul", null, arr(g.items).map(function(x){ return h("li", null, x); })));
-      })));
-    },
-
-    education: function(st){
-      return section(st, "", heading(st), h("div", { class: "edu" }, arr(S.education).map(function(e){
-        return h("div", null,
-          h("h3", { class: "has-dot" }, small(), e.school || ""),
-          h("div", { class: "deg" }, e.degree || ""),
-          h("div", { class: "meta" }, e.dates ? h("span", null, e.dates) : null, arr(e.details).map(function(d){ return h("span", null, d); })),
-          arr(e.courses).length ? [h("div", { class: "lbl" }, "Relevant coursework"),
-            h("div", { class: "tags" }, arr(e.courses).map(function(c){ return h("span", { class: "tag" }, c); }))] : null);
-      })));
-    },
-
-    contact: function(st){
-      var email = h("span", { class: "email" }, S.email || "");
-      var copy = h("button", { class: "btn", type: "button" }, "Copy email");
-      copy.addEventListener("click", function(){
-        var reset = function(ms){ setTimeout(function(){ copy.textContent = "Copy email"; }, ms); };
-        var fallback = function(){
-          var r = document.createRange(); r.selectNodeContents(email);
-          var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-          copy.textContent = "Selected. Press Ctrl+C"; reset(2600);
-        };
-        try { navigator.clipboard.writeText(S.email || "").then(function(){ copy.textContent = "Copied"; reset(1800); }, fallback); } catch (e) { fallback(); }
-      });
-      return section(st, "contact", heading(st),
-        S.contactNote ? h("p", null, S.contactNote) : null,
-        S.email ? h("div", { class: "email-row" }, email, copy) : null,
-        h("div", { class: "actions" }, arr(S.links).map(function(l){ return link(l, "btn"); })));
-    }
-  };
-
-  /* ---------- build ---------- */
-  var list = document.getElementById("stations"), map = document.getElementById("map");
-  map.style.setProperty("--n", N);
-  var anchors = [], sections = [], sectionDots = [];
-  stations.forEach(function(st){
-    var a = h("a", { class: "station", href: "#" + st.id, "aria-current": "false" },
-      h("span", { class: "dot", "aria-hidden": "true" }),
-      h("span", { class: "name" }, h("span", { class: "long" }, st.label), h("span", { class: "short", "aria-hidden": "true" }, st.short || st.label)));
-    list.append(h("li", null, a)); anchors.push(a);
-    var before = bigDots.length;
-    var sec = R[st.id] ? R[st.id](st) : section(st, "", heading(st));
-    col.append(sec); sections.push(sec);
-    sectionDots.push(bigDots[before] || null);
-  });
-  document.getElementById("foot").textContent = "© " + new Date().getFullYear() + " " + (S.name || "");
-
-  /* ---------- rail: runs from the first station dot to the last ---------- */
-  var rail = document.getElementById("rail");
-  function sizeRail(){
-    if (!bigDots.length) { rail.hidden = true; return; }
-    var cr = col.getBoundingClientRect();
-    var f = bigDots[0].getBoundingClientRect(), l = bigDots[bigDots.length - 1].getBoundingClientRect();
-    rail.style.top = (f.top + f.height / 2 - cr.top) + "px";
-    rail.style.bottom = (cr.bottom - (l.top + l.height / 2)) + "px";
-  }
-
-  /* ---------- the train (stainless subway cars) ---------- */
-  var train = document.getElementById("train");
-  function car(x, lead){
-    var L = 62, s = "";
-    s += '<rect class="t-under" x="' + (x + 3) + '" y="16" width="' + (L - 6) + '" height="2.6"/>';
-    [[x + 6, x + 16], [x + 46, x + 56]].forEach(function(t){
-      s += '<rect class="t-under" x="' + t[0] + '" y="17.6" width="' + (t[1] - t[0]) + '" height="1.6" rx=".8"/>';
-      s += '<circle class="t-under" cx="' + (t[0] + 2) + '" cy="19.6" r="1.9"/><circle class="t-under" cx="' + (t[1] - 2) + '" cy="19.6" r="1.9"/>';
-    });
-    s += '<rect class="t-roof" x="' + (x + 1) + '" y="2" width="' + (L - 2) + '" height="2" rx="1"/>';
-    s += '<rect class="t-body" x="' + x + '" y="3" width="' + L + '" height="13.4" rx="1.2"/>';
-    s += '<line class="t-belt" x1="' + (x + .5) + '" y1="5" x2="' + (x + L - .5) + '" y2="5"/>';
-    s += '<line class="t-belt" x1="' + (x + .5) + '" y1="13.6" x2="' + (x + L - .5) + '" y2="13.6"/>';
-    var centers = [7.75, 23.25, 38.75, 54.25];
-    centers.forEach(function(c){
-      var cx = x + c;
-      s += '<rect class="t-door" x="' + (cx - 2.6) + '" y="4.4" width="5.2" height="11.6"/>';
-      s += '<rect class="t-glass t-door-glass" x="' + (cx - 2.1) + '" y="6" width="1.6" height="3.8" rx=".3"/>';
-      s += '<rect class="t-glass t-door-glass" x="' + (cx + .5) + '" y="6" width="1.6" height="3.8" rx=".3"/>';
-      s += '<line class="t-seam" x1="' + cx + '" y1="4.4" x2="' + cx + '" y2="16"/>';
-    });
-    for (var k = 0; k < 3; k++) {
-      var a = x + centers[k] + 3.2, b = x + centers[k + 1] - 3.2, w = (b - a - 1) / 2;
-      s += '<rect class="t-glass" x="' + a + '" y="6" width="' + w + '" height="3.8" rx=".4"/>';
-      s += '<rect class="t-glass" x="' + (a + w + 1) + '" y="6" width="' + w + '" height="3.8" rx=".4"/>';
-    }
-    s += '<circle class="t-route" cx="' + (x + 31) + '" cy="11.6" r="1.1"/>';
-    s += '<rect class="t-cab" x="' + (x + .9) + '" y="6" width="1.8" height="3.8" rx=".3"/>';
-    if (lead) {
-      s += '<rect class="t-cab" x="' + (x + L - 2.6) + '" y="5.4" width="2.2" height="5" rx=".4"/>';
-      s += '<circle class="t-lamp" cx="' + (x + L - .9) + '" cy="14.6" r=".8"/>';
-    } else {
-      s += '<rect class="t-cab" x="' + (x + L - 2.7) + '" y="6" width="1.8" height="3.8" rx=".3"/>';
-    }
-    return s;
-  }
-  train.innerHTML = '<svg viewBox="0 0 126 22" xmlns="http://www.w3.org/2000/svg">' +
-    '<defs><linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--steel-hi)"/><stop offset=".55" style="stop-color:var(--steel)"/><stop offset="1" style="stop-color:var(--steel-lo)"/></linearGradient></defs>' +
-    car(0, false) +
-    '<rect class="t-under" x="62" y="6" width="2" height="9"/><rect class="t-under" x="61" y="13" width="4" height="1.4"/>' +
-    car(64, true) + '</svg>';
-
-  /* ---------- train motion ---------- */
-  var pauseBtn = document.getElementById("pause");
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var T = { x: 0, v: 0, at: 0, target: 0, dir: 1, face: 1, dwellUntil: 0, held: false, paused: false, last: 0, active: -1 };
-  var C = [], W = 0, TW = 150;
-  try { T.paused = localStorage.getItem("trainPaused") === "1"; } catch (e) {}
-
-  function measure(){
-    var mr = map.getBoundingClientRect(), oldW = W;
-    W = mr.width; TW = train.offsetWidth || 150;
-    C = anchors.map(function(a){ var d = a.querySelector(".dot").getBoundingClientRect(); return d.left + d.width / 2 - mr.left; });
-    if (oldW && W) T.x = T.x * (W / oldW);
-    sizeRail();
-  }
-  function xFor(i){ return Math.max(0, Math.min(W - TW, C[i] - TW / 2)); }
-  function place(){ train.style.transform = "translateX(" + T.x.toFixed(1) + "px)"; train.classList.toggle("flip", T.face < 0); }
-  function doors(open){ train.classList.toggle("open", open); }
-  function arrive(now){
-    T.at = T.target; T.x = xFor(T.at); T.v = 0; place(); doors(true);
-    T.dwellUntil = now + (T.held ? 6500 : 2400); T.held = false;
-  }
-  function pickNext(){
-    if (T.at + T.dir > N - 1 || T.at + T.dir < 0) T.dir = -T.dir;
-    T.target = T.at + T.dir;
-  }
-  function dispatch(i){
-    if (N < 2) return;
-    T.target = i; T.held = true; T.dwellUntil = 0; doors(false);
-    if (i > T.at) T.dir = 1; else if (i < T.at) T.dir = -1;
-    if (reduce.matches || T.paused) { T.at = i; T.x = xFor(i); place(); }
-  }
-  function frame(now){
-    requestAnimationFrame(frame);
-    var dt = T.last ? Math.min(0.05, (now - T.last) / 1000) : 0; T.last = now;
-    if (T.paused || reduce.matches || N < 2 || !W) return;
-    if (now < T.dwellUntil) return;
-    if (train.classList.contains("open")) { doors(false); pickNext(); }
-    var d = xFor(T.target) - T.x, s = d >= 0 ? 1 : -1;
-    var vmax = Math.max(70, W * 0.16), a = vmax * 1.3;
-    if (Math.abs(d) < 0.8) { arrive(now); return; }
-    if (s !== T.face) { T.face = s; T.v = 0; }
-    if (Math.abs(d) <= (T.v * T.v) / (2 * a) + 1) T.v = Math.max(8, T.v - a * dt);
-    else T.v = Math.min(vmax, T.v + a * dt);
-    var step = s * T.v * dt;
-    if (Math.abs(step) >= Math.abs(d)) step = d;
-    T.x += step; place();
-  }
-  function setPaused(p){
-    T.paused = p;
-    pauseBtn.setAttribute("aria-pressed", p ? "true" : "false");
-    pauseBtn.setAttribute("aria-label", p ? "Resume train" : "Pause train");
-    pauseBtn.querySelector(".txt").textContent = p ? "Resume train" : "Pause train";
-    pauseBtn.querySelector("svg").innerHTML = p ? '<path d="M2 1l9 5-9 5z"/>' : '<rect x="1" y="1" width="3.5" height="10"/><rect x="7.5" y="1" width="3.5" height="10"/>';
-    if (!p) { T.last = 0; T.dwellUntil = 0; }
-    try { localStorage.setItem("trainPaused", p ? "1" : "0"); } catch (e) {}
-  }
-  pauseBtn.addEventListener("click", function(){ setPaused(!T.paused); });
-
-  /* ---------- active station (map + page) ---------- */
-  function setActive(i){
-    if (T.active === i) return;
-    T.active = i;
-    anchors.forEach(function(a, k){ a.setAttribute("aria-current", k === i ? "true" : "false"); });
-    sectionDots.forEach(function(d, k){ if (d) d.classList.toggle("on", k === i); });
-  }
-  var scrollTimer = null;
-  anchors.forEach(function(a, i){ a.addEventListener("click", function(){ setActive(i); dispatch(i); }); });
-  if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if (!en.isIntersecting) return;
-        var i = sections.indexOf(en.target);
-        if (i < 0 || i === T.active) return;
-        setActive(i);
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(function(){ dispatch(i); }, 350);
-      });
-    }, { rootMargin: "-35% 0px -60% 0px" });
-    sections.forEach(function(s){ io.observe(s); });
-  }
-
-  /* ---------- start ---------- */
-  measure();
-  var start = Math.max(0, stations.findIndex(function(s){ return "#" + s.id === location.hash; }));
-  setActive(start);
-  T.at = start; T.x = xFor(start); place();
-  T.dir = start >= N - 1 ? -1 : 1; T.target = T.at;
-  doors(true); T.dwellUntil = performance.now() + 1200;
-  setPaused(T.paused);
-  requestAnimationFrame(frame);
-  window.addEventListener("resize", function(){ measure(); if (T.paused || reduce.matches) { T.x = xFor(T.at); place(); } });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ measure(); place(); });
-  col.addEventListener("toggle", sizeRail, true);
-})();
-</script>
+<footer><div class="wrap"><div class="foot" id="foot"></div></div></footer>
 </body>
 </html>
