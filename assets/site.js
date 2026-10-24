@@ -65,13 +65,17 @@
   }
   var S = clean(window.SITE);
 
-  if (S.lineColor) root.style.setProperty("--line", S.lineColor);
-
   var stations = arr(S.stations), N = stations.length;
   var bigDots = [];
+  function pad(n){ return ("0" + n).slice(-2); }
   function dot(){ var d = h("span", { class: "st-dot", "aria-hidden": "true" }); bigDots.push(d); return d; }
   function small(){ return h("span", { class: "sm-dot", "aria-hidden": "true" }); }
-  function heading(st){ return h("h2", { class: "has-dot" }, dot(), st.label); }
+  // A 4px rule that tees into the line at this section's station, then "Stop 03 / 07" and the title
+  function heading(st){
+    return h("div", { class: "stop-head has-dot" }, dot(),
+      h("p", { class: "stop-no" }, "Stop " + pad(stations.indexOf(st) + 1) + " / " + pad(N)),
+      h("h2", null, st.label));
+  }
   function section(st, cls){ var s = h("section", { class: "stop " + (cls || ""), id: st.id }); for (var i = 2; i < arguments.length; i++) add(s, arguments[i]); return s; }
   function tagList(t){ return arr(t).length ? h("div", { class: "tags" }, arr(t).map(function(x){ return h("span", { class: "tag" }, x); })) : null; }
   function labeled(label, items){ return arr(items).length ? [h("div", { class: "lbl" }, label), tagList(items)] : null; }
@@ -95,7 +99,11 @@
     var rows = semesters.map(function(s, i){
       var id = "term-" + i + "-" + Math.random().toString(36).slice(2, 7);
       var panel = h("div", { class: "term-panel", id: id, hidden: true },
-        h("ul", null, arr(s.courses).map(function(c){ return h("li", null, c); })));
+        h("ul", null, arr(s.courses).map(function(c){
+          // "MENG 3125: Machine Elements" -> course code set in mono beside the title
+          var m = /^([A-Z]{2,5} [A-Z]?\d{2,4}[A-Z]?):\s*(.+)$/.exec(c);
+          return h("li", null, m ? [h("span", { class: "code" }, m[1]), h("span", null, m[2])] : c);
+        })));
       var btn = h("button", { class: "term-btn", type: "button", "aria-expanded": "false", "aria-controls": id }, s.term);
       btn.addEventListener("click", function(){
         var opening = btn.getAttribute("aria-expanded") !== "true";
@@ -187,7 +195,7 @@
       (p.role || arr(p.tags).length) ? h("div", { class: "proj-meta" }, p.role ? h("span", { class: "proj-role" }, p.role) : null, tagList(p.tags)) : null,
       p.summary ? h("p", { class: "proj-lead" }, p.summary) : null,
       (overview.length || side) ? h("div", { class: "proj-cols" + (overview.length && side ? " two" : "") },
-        overview.length ? h("div", null, h("h3", { class: "kicker" }, "Overview"), overview.map(function(t){ return h("p", null, t); })) : null,
+        overview.length ? h("div", { class: "proj-overview" }, h("h3", { class: "kicker" }, "Overview"), overview.map(function(t){ return h("p", null, t); })) : null,
         side) : null,
       reasons.length ? h("section", { class: "why", "aria-labelledby": "why-title" },
         h("h3", { id: "why-title" }, "Why I built it this way"),
@@ -208,6 +216,7 @@
   /* ---------- leader lines: from each reasoning box to its spot on the image ---------- */
   var NS = "http://www.w3.org/2000/svg";
   function svgEl(tag, attrs){ var e = document.createElementNS(NS, tag); Object.keys(attrs).forEach(function(k){ e.setAttribute(k, attrs[k]); }); return e; }
+  function square(cx, cy, size, cls){ return svgEl("rect", { class: cls, x: (cx - size / 2).toFixed(1), y: (cy - size / 2).toFixed(1), width: size, height: size }); }
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
   function drawLeaders(){
     if (!pd.open) return;
@@ -237,9 +246,8 @@
       var svg = svgEl("svg", { class: "leader", "aria-hidden": "true", width: R.width.toFixed(1), height: R.height.toFixed(1) });
       svg.append(svgEl("path", { d: pts.map(function(p, k){ return (k ? "L" : "M") + X(p) + " " + Y(p); }).join(" ") }));
       var s = pts[0], e = pts[pts.length - 1];
-      svg.append(svgEl("circle", { class: "tail", cx: X(s), cy: Y(s), r: 4 }));
-      if (pt) svg.append(svgEl("circle", { class: "halo", cx: X(e), cy: Y(e), r: 15 }));
-      svg.append(svgEl("circle", { class: "tip", cx: X(e), cy: Y(e), r: pt ? 6.5 : 5 }));
+      svg.append(square(+X(s), +Y(s), 8, "tail"));
+      svg.append(square(+X(e), +Y(e), pt ? 14 : 10, "tip"));
       row.append(svg);
     });
   }
@@ -255,17 +263,23 @@
     about: function(st){
       var photoSrc = S.photo || S.image;
       var photo = photoSrc ? h("img", { class: "headshot", src: photoSrc, alt: S.name ? "Photo of " + S.name : "", fetchpriority: "high" }) : null;
+      // "Hello, my name is Darren Ke!" -> a small kicker, then the name as display type with the last word in italic
+      var line = S.headline || S.name || "", at = S.name ? line.indexOf(S.name) : -1;
+      var kicker = at > 0 ? line.slice(0, at).replace(/[\s,:;]+$/, "") : "";
+      var shown = at >= 0 ? line.slice(at) : line, cut = shown.lastIndexOf(" ");
       var hero = h("div", { class: "hero" + (photo ? " has-photo" : "") },
         h("div", null,
-          h("h1", { class: "has-dot" }, dot(), S.headline || S.name || ""),
+          h("p", { class: "hero-kicker has-dot" }, dot(), kicker || st.label),
+          h("h1", { class: "hero-name" }, cut > 0 ? [shown.slice(0, cut + 1), h("em", null, shown.slice(cut + 1))] : shown),
+          h("div", { class: "hero-rule", "aria-hidden": "true" }),
           (S.major || S.school || S.classOf) ? h("div", { class: "sub" },
             S.major ? h("span", null, S.major) : null,
             S.school ? [h("span", { class: "sep", "aria-hidden": "true" }, "/"), h("span", null, S.school)] : null,
             S.classOf ? [h("span", { class: "sep", "aria-hidden": "true" }, "/"), h("span", null, S.classOf)] : null) : null,
           S.bio ? h("p", { class: "bio" }, S.bio) : null,
           h("div", { class: "actions" },
-            S.resumePdf ? h("a", { class: "btn primary", href: S.resumePdf, target: "_blank", rel: "noopener" }, "Resume (PDF)") : null,
-            arr(S.links).map(function(l){ return link(l, "btn"); })),
+            S.resumePdf ? h("a", { class: "btn primary go", href: S.resumePdf, target: "_blank", rel: "noopener" }, "Resume (PDF)") : null,
+            arr(S.links).map(function(l, i){ return link(l, "btn go" + (i || S.resumePdf ? "" : " primary")); })),
           // Only shows on paper: contact details where the buttons were
           h("p", { class: "print-only" }, [email, location.host].concat(arr(S.links).filter(function(l){ return /^https?:/i.test(l.url); }).map(function(l){ return l.url.replace(/^https?:\/\/(www\.)?/i, ""); })).filter(Boolean).join("  ·  "))),
         photo);
@@ -338,7 +352,7 @@
     },
 
     contact: function(st){
-      var addr = h("span", { class: "email" }, email);
+      var addr = h("a", { class: "email", href: "mailto:" + email }, email);
       var copy = h("button", { class: "btn", type: "button" }, "Copy email");
       copy.addEventListener("click", function(){
         var reset = function(ms){ setTimeout(function(){ copy.textContent = "Copy email"; }, ms); };
@@ -349,12 +363,21 @@
         };
         try { navigator.clipboard.writeText(email).then(function(){ copy.textContent = "Copied"; reset(1800); }, fallback); } catch (e) { fallback(); }
       });
-      return section(st, "contact", heading(st),
+      return section(st, "contact inverted", heading(st),
         S.contactNote ? h("p", null, S.contactNote) : null,
         email ? h("div", { class: "email-row" }, addr, copy) : null,
-        h("div", { class: "actions" }, arr(S.links).map(function(l){ return link(l, "btn"); })));
+        h("div", { class: "actions" }, arr(S.links).map(function(l){ return link(l, "btn go"); })));
     }
   };
+
+  // "By the numbers": an inverted band right after the intro, from stats: [ ... ] in content.js
+  function statsBand(){
+    var stats = arr(S.stats).filter(function(s){ return s.value; });
+    if (!stats.length) return null;
+    return h("section", { class: "stats inverted", "aria-label": "By the numbers" },
+      h("p", { class: "stats-label" }, "By the numbers"),
+      h("ul", null, stats.map(function(s){ return h("li", null, h("span", { class: "stat-value" }, s.value), h("span", { class: "stat-label" }, s.label)); })));
+  }
 
   /* ---------- build ---------- */
   var list = document.getElementById("stations"), map = document.getElementById("map");
@@ -376,6 +399,7 @@
     }
     col.append(sec); sections.push(sec);
     sectionDots.push(bigDots[before] || null);
+    if (st.id === "about") { var band = statsBand(); if (band) col.append(band); }
   });
 
   var foot = document.getElementById("foot");
@@ -441,7 +465,7 @@
     return s;
   }
   train.innerHTML = '<svg viewBox="0 0 126 22" xmlns="http://www.w3.org/2000/svg">' +
-    '<defs><linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3f5f6"/><stop offset=".55" stop-color="#cfd4d8"/><stop offset="1" stop-color="#b4babf"/></linearGradient></defs>' +
+    '<defs><linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2f2f2"/><stop offset=".55" stop-color="#d0d0d0"/><stop offset="1" stop-color="#b5b5b5"/></linearGradient></defs>' +
     car(0, false) +
     '<rect class="t-under" x="62" y="6" width="2" height="9"/><rect class="t-under" x="61" y="13" width="4" height="1.4"/>' +
     car(64, true) + '</svg>';
@@ -505,9 +529,12 @@
   pauseBtn.addEventListener("click", function(){ setPaused(!T.paused); });
 
   /* ---------- active station (map + page) ---------- */
+  var caption = document.getElementById("map-caption");
   function setActive(i){
     if (T.active === i) return;
     T.active = i;
+    // Phones show only the current stop under the map
+    if (caption && stations[i]) caption.textContent = "Stop " + pad(i + 1) + " / " + pad(N) + " · " + stations[i].label;
     anchors.forEach(function(a, k){ a.setAttribute("aria-current", k === i ? "true" : "false"); });
     sectionDots.forEach(function(d, k){ if (d) d.classList.toggle("on", k === i); });
   }

@@ -25,7 +25,6 @@ window.SITE = {
   name: "Darren Ke",                          // Shown in the footer
   headline: "Hello, my name is Darren Ke!",   // The big greeting at the top
   image: "headshot.png",     // Your photo. Upload it next to index.html with this exact name. Hidden until it exists.
-  lineColor: "#1F5FBF",      // Color of your subway line, as a hex code
   bio: "I am an undergraduate at Yale University studying Mechanical Engineering with a certificate in Energy studies. I love to design and build new things, especially transportation related projects! Check out my projects, read about my interests, and reach out to connect!",
 
   email: "darren.ke@yale.edu",
@@ -33,6 +32,15 @@ window.SITE = {
   links: [
     { label: "Email",    url: "mailto:darren.ke@yale.edu" },
     { label: "LinkedIn", url: "https://www.linkedin.com/in/darrenke" }
+  ],
+
+  /* ---------- By the numbers ----------
+     The black band right after your intro. Keep it to 3 or 4 numbers.
+     Delete the whole list to hide the band. */
+  stats: [
+    { value: "1,400+", label: "Air-quality sensors in the Gentner Lab network" },
+    { value: "300+",   label: "Students at the alumni events I plan" },
+    { value: "$5",     label: "Saved per unit by my outdoor sensor enclosures" }
   ],
 
   /* ---------- Stations on your line (the map at the top) ----------
