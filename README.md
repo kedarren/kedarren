@@ -30,6 +30,10 @@ In a project's `reasoning` list, give a decision an `image` and a `point: [left 
 - "Save as PDF" in the footer prints the whole site as a clean one-column resume.
 - When a link is shared (LinkedIn, iMessage, Slack), the preview uses `assets/og.png`.
 
+## Visitor stats
+
+Vercel Web Analytics is on: in the Vercel dashboard, open the project and click **Analytics** to see visitors, pages, referrers and countries. It uses no cookies, so the site needs no cookie banner.
+
 ## What each file does
 
 | File | What it is | Edit it? |

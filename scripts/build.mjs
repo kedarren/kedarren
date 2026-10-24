@@ -54,6 +54,17 @@ for (const name of readdirSync(root)) {
   if (keepOut.has(name) || name.startsWith(".")) continue;
   cpSync(join(root, name), join(out, name), { recursive: true });
 }
+// Vercel Web Analytics: Vercel gives each project its own script path at build time
+if (process.env.VERCEL) {
+  const basePath = (process.env.VERCEL_OBSERVABILITY_BASEPATH || "/_vercel").replace(/\/$/, "");
+  const tag = `<script defer src="${basePath}/insights/script.js" data-endpoint="${basePath}/insights"></script>\n</body>`;
+  for (const page of ["index.html", "404.html"]) {
+    const file = join(out, page);
+    writeFileSync(file, readFileSync(file, "utf8").replace("</body>", tag));
+  }
+  console.log(`✓ Web Analytics script added from ${basePath}/insights`);
+}
+
 const today = new Date().toISOString().slice(0, 10);
 writeFileSync(join(out, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${SITE_URL}/</loc><lastmod>${today}</lastmod></url>\n</urlset>\n`);

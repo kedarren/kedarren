@@ -6,6 +6,8 @@
   window.addEventListener("error", function(e){
     if (e.filename && e.filename.indexOf("content.js") > -1) window.SITE_ERROR = { line: e.lineno, message: e.message };
   });
+  // Queue for Vercel Web Analytics events until its script loads (the script tag is added at build time)
+  window.va = window.va || function(){ (window.vaq = window.vaq || []).push(arguments); };
   // content.js loads right after this file; both finish before DOMContentLoaded
   document.addEventListener("DOMContentLoaded", start);
 
