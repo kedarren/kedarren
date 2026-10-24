@@ -37,6 +37,7 @@
   /* A single value counts as a one-item list, so a forgotten [ ] in content.js still shows up */
   var arr = function(x){ return Array.isArray(x) ? x : (x == null || x === "" ? [] : [x]); };
   function slug(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+  function pad(n){ return ("0" + n).slice(-2); }
   var ICON = {
     x: '<svg viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>',
     expand: '<svg viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5L9 7M2.5 13.5L7 9"/></svg>'
@@ -45,7 +46,6 @@
 
   if (!window.SITE) {
     var E = window.SITE_ERROR;
-    document.getElementById("rail").hidden = true;
     col.append(h("section", { class: "stop about oops" },
       h("h1", null, E && E.line ? "content.js has a typo" : "content.js didn't load"),
       E && E.line
@@ -64,47 +64,49 @@
     return v;
   }
   var S = clean(window.SITE);
+  var J = S.journey || {};
 
   var stations = arr(S.stations), N = stations.length;
-  var bigDots = [];
-  function pad(n){ return ("0" + n).slice(-2); }
-  function dot(){ var d = h("span", { class: "st-dot", "aria-hidden": "true" }); bigDots.push(d); return d; }
-  function small(){ return h("span", { class: "sm-dot", "aria-hidden": "true" }); }
-  // A 4px rule that tees into the line at this section's station, then "Stop 03 / 07" and the title
+  // A station sign over a short stretch of track: route bullet, "Stop 3 of 7", the name
   function heading(st){
-    return h("div", { class: "stop-head has-dot" }, dot(),
-      h("p", { class: "stop-no" }, "Stop " + pad(stations.indexOf(st) + 1) + " / " + pad(N)),
-      h("h2", null, st.label));
+    var i = stations.indexOf(st) + 1;
+    return h("div", { class: "stop-head" },
+      h("span", { class: "stop-bullet", "aria-hidden": "true" }, i),
+      h("div", null, h("p", { class: "stop-no" }, "Stop " + i + " of " + N), h("h2", null, st.label)));
   }
-  function section(st, cls){ var s = h("section", { class: "stop " + (cls || ""), id: st.id }); for (var i = 2; i < arguments.length; i++) add(s, arguments[i]); return s; }
+  function section(st, cls){ var s = h("section", { class: "stop " + (cls || ""), id: st.id, "data-stop": st.label }); for (var i = 2; i < arguments.length; i++) add(s, arguments[i]); return s; }
   function tagList(t){ return arr(t).length ? h("div", { class: "tags" }, arr(t).map(function(x){ return h("span", { class: "tag" }, x); })) : null; }
   function labeled(label, items){ return arr(items).length ? [h("div", { class: "lbl" }, label), tagList(items)] : null; }
   function missing(src){ return h("div", { class: "ph" }, "Couldn't find " + src + ". Check that it's uploaded and the name matches exactly, including capital letters."); }
 
+  // Research and experience: each role is a stop on a short branch line
   function jobs(st, list){
     return section(st, "", heading(st), h("ol", { class: "jobs" }, arr(list).filter(function(j){ return j.title || j.org; }).map(function(j){
       return h("li", null,
         h("div", { class: "job-top" },
-          h("h3", { class: "has-dot" }, small(), j.title || j.org),
+          h("h3", null, j.title || j.org),
           j.title ? h("span", { class: "job-org" }, j.org) : null,
           h("span", { class: "job-dates" }, j.dates)),
         arr(j.points).length ? h("ul", null, arr(j.points).map(function(p){ return h("li", null, p); })) : null);
     })));
   }
 
+  // Education: a timetable, one row per semester
   function semesterTabs(semesters){
     semesters = arr(semesters).filter(function(s){ return s.term; });
     if (!semesters.length) return null;
     var buttons = [], panels = [];
     var rows = semesters.map(function(s, i){
-      var id = "term-" + i + "-" + Math.random().toString(36).slice(2, 7);
+      var id = "term-" + i + "-" + Math.random().toString(36).slice(2, 7), courses = arr(s.courses);
       var panel = h("div", { class: "term-panel", id: id, hidden: true },
-        h("ul", null, arr(s.courses).map(function(c){
+        h("ul", null, courses.map(function(c){
           // "MENG 3125: Machine Elements" -> course code set in mono beside the title
           var m = /^([A-Z]{2,5} [A-Z]?\d{2,4}[A-Z]?):\s*(.+)$/.exec(c);
           return h("li", null, m ? [h("span", { class: "code" }, m[1]), h("span", null, m[2])] : c);
         })));
-      var btn = h("button", { class: "term-btn", type: "button", "aria-expanded": "false", "aria-controls": id }, s.term);
+      var btn = h("button", { class: "term-btn", type: "button", "aria-expanded": "false", "aria-controls": id },
+        h("span", { class: "term-name" }, s.term),
+        h("span", { class: "term-count" }, courses.length + (courses.length === 1 ? " course" : " courses")));
       btn.addEventListener("click", function(){
         var opening = btn.getAttribute("aria-expanded") !== "true";
         buttons.forEach(function(b, k){ b.setAttribute("aria-expanded", "false"); panels[k].hidden = true; });
@@ -114,6 +116,29 @@
       return h("div", { class: "term" }, btn, panel);
     });
     return [h("div", { class: "lbl" }, "Coursework"), h("div", { class: "terms" }, rows)];
+  }
+
+  /* ---------- the ticket ---------- */
+  function hash(s){ var x = 2166136261; for (var i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
+  function barcode(seed){
+    var x = 0, bars = "", r = seed || 1;
+    while (x < 206) { r = Math.imul(r ^ (r >>> 13), 1274126177) >>> 0; var w = 1 + (r % 3), gap = 1 + ((r >>> 4) % 3); bars += '<rect x="' + x + '" width="' + w + '" height="40"/>'; x += w + gap; }
+    var b = h("span", { "aria-hidden": "true" }); b.innerHTML = '<svg class="barcode" viewBox="0 0 210 40" preserveAspectRatio="none" fill="#15171c">' + bars + "</svg>"; return b.firstChild;
+  }
+  function ticket(photo){
+    var rows = arr(S.ticket).filter(function(r){ return r.label && r.value; });
+    if (!rows.length && !(J.from && J.to)) return null;
+    var seed = hash((S.name || "") + (J.from || "") + (J.to || ""));
+    return h("aside", { class: "ticket", "aria-label": "Ticket" },
+      h("div", { class: "t-top" },
+        h("span", { class: "t-type" }, h("span", { class: "t-bullet", "aria-hidden": "true" }, (S.name || "?").charAt(0)), "One way"),
+        h("span", null, "Non-transferable")),
+      (J.from && J.to) ? h("p", { class: "t-route" }, h("span", null, J.from), h("span", { class: "arrow", "aria-hidden": "true" }, "→"), h("span", { class: "vh" }, "to"), h("span", null, J.to)) : null,
+      h("div", { class: "t-perf", "aria-hidden": "true" }),
+      rows.length ? h("dl", { class: "t-rows" }, rows.map(function(r){ return [h("dt", null, r.label), h("dd", null, r.value)]; })) : null,
+      h("div", { class: "t-foot" },
+        h("div", null, barcode(seed), h("p", { class: "t-no", "aria-hidden": "true" }, "No. " + String(seed % 10000000).padStart(7, "0"))),
+        photo));
   }
 
   /* ---------- project window ---------- */
@@ -166,15 +191,14 @@
   window.addEventListener("resize", function(){ if (pd.open) drawLeaders(); });
 
   function reasonRow(r, i){
-    var n = ("0" + (i + 1)).slice(-2);
     var row = h("li", { class: "why-row" + (r.image ? (i % 2 ? " flip" : "") : " solo") },
       h("div", { class: "why-box" },
-        h("div", { class: "why-num" }, n),
+        h("span", { class: "why-num", "aria-hidden": "true" }, i + 1),
         r.title ? h("h4", null, r.title) : null,
         arr(r.text).map(function(t){ return h("p", null, t); })),
       r.image ? h("figure", { class: "why-fig" },
         zoomable(r.image, r.title, r.caption),
-        r.caption ? h("figcaption", null, h("b", null, "FIG. " + (i + 1)), r.caption) : null) : null);
+        r.caption ? h("figcaption", null, h("b", null, "Fig. " + (i + 1)), r.caption) : null) : null);
     var p = r.point;
     row._point = Array.isArray(p) && p.length === 2 && isFinite(p[0]) && isFinite(p[1]) ? [+p[0], +p[1]] : null;
     return row;
@@ -184,9 +208,9 @@
     var overview = arr(p.overview), points = arr(p.points), links = arr(p.links);
     var reasons = arr(p.reasoning).filter(function(r){ return r.title || arr(r.text).length; });
     var pictures = reasons.some(function(r){ return r.image; });
-    var side = (points.length || links.length) ? h("div", null,
+    var side = (points.length || links.length) ? h("div", { class: "side-box" },
       points.length ? [h("h3", { class: "kicker" }, "Highlights"), h("ul", null, points.map(function(x){ return h("li", null, x); }))] : null,
-      links.length ? h("div", { class: "actions" }, links.map(function(l){ return link(l, "btn"); })) : null) : null;
+      links.length ? h("div", { class: "actions" }, links.map(function(l){ return link(l, "btn go"); })) : null) : null;
     var close = h("button", { class: "x", type: "button", "aria-label": "Close project" }, icon("x"));
     close.addEventListener("click", function(){ pd.close(); });
     // Focusable so keyboard users can scroll it with the arrow keys
@@ -195,7 +219,7 @@
       (p.role || arr(p.tags).length) ? h("div", { class: "proj-meta" }, p.role ? h("span", { class: "proj-role" }, p.role) : null, tagList(p.tags)) : null,
       p.summary ? h("p", { class: "proj-lead" }, p.summary) : null,
       (overview.length || side) ? h("div", { class: "proj-cols" + (overview.length && side ? " two" : "") },
-        overview.length ? h("div", { class: "proj-overview" }, h("h3", { class: "kicker" }, "Overview"), overview.map(function(t){ return h("p", null, t); })) : null,
+        overview.length ? h("div", null, h("h3", { class: "kicker" }, "Overview"), overview.map(function(t){ return h("p", null, t); })) : null,
         side) : null,
       reasons.length ? h("section", { class: "why", "aria-labelledby": "why-title" },
         h("h3", { id: "why-title" }, "Why I built it this way"),
@@ -216,7 +240,6 @@
   /* ---------- leader lines: from each reasoning box to its spot on the image ---------- */
   var NS = "http://www.w3.org/2000/svg";
   function svgEl(tag, attrs){ var e = document.createElementNS(NS, tag); Object.keys(attrs).forEach(function(k){ e.setAttribute(k, attrs[k]); }); return e; }
-  function square(cx, cy, size, cls){ return svgEl("rect", { class: cls, x: (cx - size / 2).toFixed(1), y: (cy - size / 2).toFixed(1), width: size, height: size }); }
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
   function drawLeaders(){
     if (!pd.open) return;
@@ -246,8 +269,8 @@
       var svg = svgEl("svg", { class: "leader", "aria-hidden": "true", width: R.width.toFixed(1), height: R.height.toFixed(1) });
       svg.append(svgEl("path", { d: pts.map(function(p, k){ return (k ? "L" : "M") + X(p) + " " + Y(p); }).join(" ") }));
       var s = pts[0], e = pts[pts.length - 1];
-      svg.append(square(+X(s), +Y(s), 8, "tail"));
-      svg.append(square(+X(e), +Y(e), pt ? 14 : 10, "tip"));
+      svg.append(svgEl("circle", { class: "tail", cx: X(s), cy: Y(s), r: 4 }));
+      svg.append(svgEl("circle", { class: "tip", cx: X(e), cy: Y(e), r: pt ? 7 : 5 }));
       row.append(svg);
     });
   }
@@ -262,29 +285,24 @@
   var R = {
     about: function(st){
       var photoSrc = S.photo || S.image;
-      var photo = photoSrc ? h("img", { class: "headshot", src: photoSrc, alt: S.name ? "Photo of " + S.name : "", fetchpriority: "high" }) : null;
-      // "Hello, my name is Darren Ke!" -> a small kicker, then the name as display type with the last word in italic
+      var photo = photoSrc ? h("img", { class: "t-photo", src: photoSrc, alt: S.name ? "Photo of " + S.name : "" }) : null;
+      if (photo) photo.addEventListener("error", function(){ photo.remove(); });
+      // "Hello, my name is Darren Ke!" -> a small kicker, then the name as a big sign with the last word in red
       var line = S.headline || S.name || "", at = S.name ? line.indexOf(S.name) : -1;
       var kicker = at > 0 ? line.slice(0, at).replace(/[\s,:;]+$/, "") : "";
       var shown = at >= 0 ? line.slice(at) : line, cut = shown.lastIndexOf(" ");
-      var hero = h("div", { class: "hero" + (photo ? " has-photo" : "") },
+      return section(st, "about", h("div", { class: "hero" },
         h("div", null,
-          h("p", { class: "hero-kicker has-dot" }, dot(), kicker || st.label),
-          h("h1", { class: "hero-name" }, cut > 0 ? [shown.slice(0, cut + 1), h("em", null, shown.slice(cut + 1))] : shown),
-          h("div", { class: "hero-rule", "aria-hidden": "true" }),
-          (S.major || S.school || S.classOf) ? h("div", { class: "sub" },
-            S.major ? h("span", null, S.major) : null,
-            S.school ? [h("span", { class: "sep", "aria-hidden": "true" }, "/"), h("span", null, S.school)] : null,
-            S.classOf ? [h("span", { class: "sep", "aria-hidden": "true" }, "/"), h("span", null, S.classOf)] : null) : null,
+          kicker ? h("p", { class: "hero-kicker" }, kicker) : null,
+          h("h1", { class: "hero-name" }, cut > 0 ? [shown.slice(0, cut + 1), h("span", { class: "last" }, shown.slice(cut + 1))] : shown),
+          (S.major || S.school || S.classOf) ? h("div", { class: "sub" }, S.major ? h("span", null, S.major) : null, S.school ? h("span", null, S.school) : null, S.classOf ? h("span", null, S.classOf) : null) : null,
           S.bio ? h("p", { class: "bio" }, S.bio) : null,
           h("div", { class: "actions" },
             S.resumePdf ? h("a", { class: "btn primary go", href: S.resumePdf, target: "_blank", rel: "noopener" }, "Resume (PDF)") : null,
             arr(S.links).map(function(l, i){ return link(l, "btn go" + (i || S.resumePdf ? "" : " primary")); })),
           // Only shows on paper: contact details where the buttons were
           h("p", { class: "print-only" }, [email, location.host].concat(arr(S.links).filter(function(l){ return /^https?:/i.test(l.url); }).map(function(l){ return l.url.replace(/^https?:\/\/(www\.)?/i, ""); })).filter(Boolean).join("  ·  "))),
-        photo);
-      if (photo) photo.addEventListener("error", function(){ photo.remove(); hero.classList.remove("has-photo"); });
-      return section(st, "about", hero);
+        ticket(photo)));
     },
 
     experience: function(st){ return jobs(st, S.experience); },
@@ -292,18 +310,18 @@
     projects: function(st){
       var tags = [];
       projects.forEach(function(p){ arr(p.tags).forEach(function(t){ if (tags.indexOf(t) < 0) tags.push(t); }); });
-      var cards = projects.map(function(p){
+      var cards = projects.map(function(p, n){
         var det = (arr(p.points).length || p.role || arr(p.links).length) ? h("details", null,
           h("summary", null, "Details"),
           p.role ? h("div", { class: "role" }, p.role) : null,
           arr(p.points).length ? h("ul", null, arr(p.points).map(function(x){ return h("li", null, x); })) : null,
           arr(p.links).length ? h("div", { class: "plinks" }, arr(p.links).map(function(l){ return link(l); })) : null) : null;
         var img = p.image ? h("img", { src: p.image, alt: "", loading: "lazy" }) : null;
-        // No photo yet: show the project's name on a station sign
-        var sign = h("span", { class: "sign", "aria-hidden": "true" }, h("span", { class: "sign-bullet" }), h("span", { class: "sign-name" }, p.title));
+        // No photo yet: a platform sign with the project's name
+        var sign = h("span", { class: "sign", "aria-hidden": "true" }, h("span", { class: "sign-no" }, "Project " + pad(n + 1)), h("span", { class: "sign-name" }, p.title));
         var media = h("button", { class: "media", type: "button", "aria-label": "Open full project: " + p.title },
           img || sign,
-          h("span", { class: "open-hint", "aria-hidden": "true" }, "Full project", icon("expand")));
+          h("span", { class: "open-hint", "aria-hidden": "true" }, "View project", icon("expand")));
         var card = h("article", { class: "card" + (img ? "" : " has-sign") },
           media,
           h("div", { class: "card-body" },
@@ -334,14 +352,14 @@
 
     skills: function(st){
       return section(st, "", heading(st), h("div", { class: "skills" }, arr(S.skills).filter(function(g){ return arr(g.items).length; }).map(function(g){
-        return h("div", null, h("h3", null, g.group || ""), h("ul", null, arr(g.items).map(function(x){ return h("li", null, x); })));
+        return h("div", { class: "skill-group" }, h("h3", null, g.group || ""), h("ul", null, arr(g.items).map(function(x){ return h("li", null, x); })));
       })));
     },
 
     education: function(st){
       return section(st, "", heading(st), h("div", { class: "edu" }, arr(S.education).map(function(e){
         return h("div", null,
-          h("h3", { class: "has-dot" }, small(), e.school || ""),
+          h("h3", null, e.school || ""),
           h("div", { class: "deg" }, e.degree),
           h("div", { class: "meta" }, e.dates ? h("span", null, e.dates) : null, arr(e.details).map(function(d){ return h("span", null, d); })),
           labeled("Honors", e.honors),
@@ -363,52 +381,52 @@
         };
         try { navigator.clipboard.writeText(email).then(function(){ copy.textContent = "Copied"; reset(1800); }, fallback); } catch (e) { fallback(); }
       });
-      return section(st, "contact inverted", heading(st),
-        S.contactNote ? h("p", null, S.contactNote) : null,
+      return section(st, "contact", heading(st),
+        S.contactNote ? h("p", { class: "lead" }, S.contactNote) : null,
         email ? h("div", { class: "email-row" }, addr, copy) : null,
         h("div", { class: "actions" }, arr(S.links).map(function(l){ return link(l, "btn go"); })));
     }
   };
 
-  // "By the numbers": an inverted band right after the intro, from stats: [ ... ] in content.js
+  // "By the numbers": a destination-board panel right after the intro, from stats: [ ... ] in content.js
   function statsBand(){
     var stats = arr(S.stats).filter(function(s){ return s.value; });
     if (!stats.length) return null;
-    return h("section", { class: "stats inverted", "aria-label": "By the numbers" },
+    return h("div", { class: "stats", role: "region", "aria-label": "By the numbers" },
       h("p", { class: "stats-label" }, "By the numbers"),
       h("ul", null, stats.map(function(s){ return h("li", null, h("span", { class: "stat-value" }, s.value), h("span", { class: "stat-label" }, s.label)); })));
   }
 
   /* ---------- build ---------- */
-  var list = document.getElementById("stations"), map = document.getElementById("map");
-  map.style.setProperty("--n", N);
-  var anchors = [], sections = [], sectionDots = [];
+  var list = document.getElementById("stations");
+  var anchors = [], sections = [];
   stations.forEach(function(st){
-    var a = h("a", { class: "station", href: "#" + st.id, "aria-current": "false", "aria-label": st.label },
+    var a = h("a", { class: "stop-link", href: "#" + st.id, "aria-current": "false", "aria-label": st.label },
       h("span", { class: "dot", "aria-hidden": "true" }),
-      h("span", { class: "name" }, h("span", { class: "long" }, st.label), h("span", { class: "short", "aria-hidden": "true" }, st.short || st.label)));
+      h("span", { class: "name", "aria-hidden": "true" }, h("span", { class: "long" }, st.label), h("span", { class: "short" }, st.short || st.label)));
     list.append(h("li", null, a)); anchors.push(a);
-    var before = bigDots.length, sec;
+    var sec;
     // A station with no special layout shows the list in content.js with the same name (research: [...]) like Experience
     var render = R[st.id] || (Array.isArray(S[st.id]) ? function(st){ return jobs(st, S[st.id]); } : null);
     try { sec = render ? render(st) : section(st, "", heading(st)); }
     catch (err) {
       console.error(err);
-      bigDots.length = before;
       sec = section(st, "", heading(st), h("p", { class: "empty" }, "This section couldn't be shown. Check the " + st.id + " part of content.js."));
     }
     col.append(sec); sections.push(sec);
-    sectionDots.push(bigDots[before] || null);
-    if (st.id === "about") { var band = statsBand(); if (band) col.append(band); }
+    if (st.id === "about") { var band = statsBand(); if (band) sec.append(band); }
   });
+  document.getElementById("from").textContent = J.from || "";
+  document.getElementById("to").textContent = J.to || "";
+  document.getElementById("marker").innerHTML = '<svg viewBox="0 0 34 19"><rect x="1" y="2" width="32" height="12" rx="3.5" fill="#d3d7db" stroke="#15171c" stroke-width="1.5"/><rect x="5" y="5" width="21" height="3.6" rx="1" fill="#27313a"/><rect x="1.8" y="10" width="30.4" height="1.8" fill="#d93a26"/><circle cx="8" cy="16" r="2.2" fill="#15171c"/><circle cx="26" cy="16" r="2.2" fill="#15171c"/></svg>';
 
   var foot = document.getElementById("foot");
   var printBtn = h("button", { class: "linkish", type: "button" }, "Save as PDF");
   printBtn.addEventListener("click", function(){ window.print(); });
-  foot.append(
-    h("span", { class: "grow" }, "© " + new Date().getFullYear() + " " + (S.name || "")),
+  add(foot, [
+    h("span", { class: "grow" }, "© " + new Date().getFullYear() + " " + (S.name || "") + (J.from && J.to ? " · " + J.from + " → " + J.to : "")),
     arr(S.links).map(function(l){ return link(l); }),
-    printBtn);
+    printBtn]);
 
   // On paper, show everything: project details and every semester
   var opened = [];
@@ -418,141 +436,31 @@
   });
   window.addEventListener("afterprint", function(){ opened.forEach(function(d){ d.open = false; }); });
 
-  /* ---------- rail: runs from the first station dot to the last ---------- */
-  var rail = document.getElementById("rail");
-  function sizeRail(){
-    if (!bigDots.length) { rail.hidden = true; return; }
-    var cr = col.getBoundingClientRect();
-    var f = bigDots[0].getBoundingClientRect(), l = bigDots[bigDots.length - 1].getBoundingClientRect();
-    rail.style.top = (f.top + f.height / 2 - cr.top) + "px";
-    rail.style.bottom = (cr.bottom - (l.top + l.height / 2)) + "px";
-  }
-
-  /* ---------- the train (stainless subway cars) ---------- */
-  var train = document.getElementById("train");
-  function car(x, lead){
-    var L = 62, s = "";
-    s += '<rect class="t-under" x="' + (x + 3) + '" y="16" width="' + (L - 6) + '" height="2.6"/>';
-    [[x + 6, x + 16], [x + 46, x + 56]].forEach(function(t){
-      s += '<rect class="t-under" x="' + t[0] + '" y="17.6" width="' + (t[1] - t[0]) + '" height="1.6" rx=".8"/>';
-      s += '<circle class="t-under" cx="' + (t[0] + 2) + '" cy="19.6" r="1.9"/><circle class="t-under" cx="' + (t[1] - 2) + '" cy="19.6" r="1.9"/>';
-    });
-    s += '<rect class="t-roof" x="' + (x + 1) + '" y="2" width="' + (L - 2) + '" height="2" rx="1"/>';
-    s += '<rect class="t-body" x="' + x + '" y="3" width="' + L + '" height="13.4" rx="1.2"/>';
-    s += '<line class="t-belt" x1="' + (x + .5) + '" y1="5" x2="' + (x + L - .5) + '" y2="5"/>';
-    s += '<line class="t-belt" x1="' + (x + .5) + '" y1="13.6" x2="' + (x + L - .5) + '" y2="13.6"/>';
-    var centers = [7.75, 23.25, 38.75, 54.25];
-    centers.forEach(function(c){
-      var cx = x + c;
-      s += '<rect class="t-door" x="' + (cx - 2.6) + '" y="4.4" width="5.2" height="11.6"/>';
-      s += '<rect class="t-glass t-door-glass" x="' + (cx - 2.1) + '" y="6" width="1.6" height="3.8" rx=".3"/>';
-      s += '<rect class="t-glass t-door-glass" x="' + (cx + .5) + '" y="6" width="1.6" height="3.8" rx=".3"/>';
-      s += '<line class="t-seam" x1="' + cx + '" y1="4.4" x2="' + cx + '" y2="16"/>';
-    });
-    for (var k = 0; k < 3; k++) {
-      var a = x + centers[k] + 3.2, b = x + centers[k + 1] - 3.2, w = (b - a - 1) / 2;
-      s += '<rect class="t-glass" x="' + a + '" y="6" width="' + w + '" height="3.8" rx=".4"/>';
-      s += '<rect class="t-glass" x="' + (a + w + 1) + '" y="6" width="' + w + '" height="3.8" rx=".4"/>';
-    }
-    s += '<circle class="t-route" cx="' + (x + 31) + '" cy="11.6" r="1.1"/>';
-    s += '<rect class="t-cab" x="' + (x + .9) + '" y="6" width="1.8" height="3.8" rx=".3"/>';
-    if (lead) {
-      s += '<rect class="t-cab" x="' + (x + L - 2.6) + '" y="5.4" width="2.2" height="5" rx=".4"/>';
-      s += '<circle class="t-lamp" cx="' + (x + L - .9) + '" cy="14.6" r=".8"/>';
-    } else {
-      s += '<rect class="t-cab" x="' + (x + L - 2.7) + '" y="6" width="1.8" height="3.8" rx=".3"/>';
-    }
-    return s;
-  }
-  train.innerHTML = '<svg viewBox="0 0 126 22" xmlns="http://www.w3.org/2000/svg">' +
-    '<defs><linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2f2f2"/><stop offset=".55" stop-color="#d0d0d0"/><stop offset="1" stop-color="#b5b5b5"/></linearGradient></defs>' +
-    car(0, false) +
-    '<rect class="t-under" x="62" y="6" width="2" height="9"/><rect class="t-under" x="61" y="13" width="4" height="1.4"/>' +
-    car(64, true) + '</svg>';
-
-  /* ---------- train motion ---------- */
-  var pauseBtn = document.getElementById("pause");
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var T = { x: 0, v: 0, at: 0, target: 0, dir: 1, face: 1, dwellUntil: 0, held: false, paused: false, last: 0, active: -1 };
-  var C = [], W = 0, TW = 150;
-  try { T.paused = localStorage.getItem("trainPaused") === "1"; } catch (e) {}
-
+  /* ---------- where you are on the line ---------- */
+  var marker = document.getElementById("marker"), active = -1, stopsAt = [];
+  // The scroll position at which each section becomes the current stop
   function measure(){
-    var mr = map.getBoundingClientRect(), oldW = W;
-    W = mr.width; TW = train.offsetWidth || 150;
-    C = anchors.map(function(a){ var d = a.querySelector(".dot").getBoundingClientRect(); return d.left + d.width / 2 - mr.left; });
-    if (oldW && W) T.x = T.x * (W / oldW);
-    sizeRail();
+    var max = root.scrollHeight - window.innerHeight;
+    stopsAt = sections.map(function(sec, i){ return i === 0 ? 0 : Math.min(max, sec.getBoundingClientRect().top + window.scrollY - window.innerHeight * .45); });
   }
-  function xFor(i){ return Math.max(0, Math.min(W - TW, C[i] - TW / 2)); }
-  function place(){ train.style.transform = "translateX(" + T.x.toFixed(1) + "px)"; train.classList.toggle("flip", T.face < 0); }
-  function doors(open){ train.classList.toggle("open", open); }
-  function arrive(now){
-    T.at = T.target; T.x = xFor(T.at); T.v = 0; place(); doors(true);
-    T.dwellUntil = now + (T.held ? 6500 : 2400); T.held = false;
+  function track(){
+    ticking = false;
+    var y = window.scrollY, max = root.scrollHeight - window.innerHeight, i = 0;
+    while (i < stopsAt.length - 1 && y >= stopsAt[i + 1]) i++;
+    var frac = i < stopsAt.length - 1 ? Math.max(0, Math.min(1, (y - stopsAt[i]) / Math.max(1, stopsAt[i + 1] - stopsAt[i]))) : 0;
+    if (y >= max - 2) { i = stopsAt.length - 1; frac = 0; }
+    marker.style.left = (N > 1 ? (i + frac) / (N - 1) * 100 : 0) + "%";
+    if (i !== active) {
+      active = i;
+      root.setAttribute("data-stop", String(i));
+      anchors.forEach(function(a, k){ a.setAttribute("aria-current", k === i ? "true" : "false"); });
+    }
   }
-  function pickNext(){
-    if (T.at + T.dir > N - 1 || T.at + T.dir < 0) T.dir = -T.dir;
-    T.target = T.at + T.dir;
-  }
-  function dispatch(i){
-    if (N < 2) return;
-    T.target = i; T.held = true; T.dwellUntil = 0; doors(false);
-    if (i > T.at) T.dir = 1; else if (i < T.at) T.dir = -1;
-    if (reduce.matches || T.paused) { T.at = i; T.x = xFor(i); place(); }
-  }
-  function frame(now){
-    requestAnimationFrame(frame);
-    var dt = T.last ? Math.min(0.05, (now - T.last) / 1000) : 0; T.last = now;
-    if (T.paused || reduce.matches || N < 2 || !W) return;
-    if (now < T.dwellUntil) return;
-    if (train.classList.contains("open")) { doors(false); pickNext(); }
-    var d = xFor(T.target) - T.x, s = d >= 0 ? 1 : -1;
-    var vmax = Math.max(70, W * 0.16), a = vmax * 1.3;
-    if (Math.abs(d) < 0.8) { arrive(now); return; }
-    if (s !== T.face) { T.face = s; T.v = 0; }
-    if (Math.abs(d) <= (T.v * T.v) / (2 * a) + 1) T.v = Math.max(8, T.v - a * dt);
-    else T.v = Math.min(vmax, T.v + a * dt);
-    var step = s * T.v * dt;
-    if (Math.abs(step) >= Math.abs(d)) step = d;
-    T.x += step; place();
-  }
-  function setPaused(p){
-    T.paused = p;
-    pauseBtn.setAttribute("aria-pressed", p ? "true" : "false");
-    pauseBtn.setAttribute("aria-label", p ? "Resume train" : "Pause train");
-    pauseBtn.querySelector(".txt").textContent = p ? "Resume train" : "Pause train";
-    pauseBtn.querySelector("svg").innerHTML = p ? '<path d="M2 1l9 5-9 5z"/>' : '<rect x="1" y="1" width="3.5" height="10"/><rect x="7.5" y="1" width="3.5" height="10"/>';
-    if (!p) { T.last = 0; T.dwellUntil = 0; }
-    try { localStorage.setItem("trainPaused", p ? "1" : "0"); } catch (e) {}
-  }
-  pauseBtn.addEventListener("click", function(){ setPaused(!T.paused); });
-
-  /* ---------- active station (map + page) ---------- */
-  var caption = document.getElementById("map-caption");
-  function setActive(i){
-    if (T.active === i) return;
-    T.active = i;
-    // Phones show only the current stop under the map
-    if (caption && stations[i]) caption.textContent = "Stop " + pad(i + 1) + " / " + pad(N) + " · " + stations[i].label;
-    anchors.forEach(function(a, k){ a.setAttribute("aria-current", k === i ? "true" : "false"); });
-    sectionDots.forEach(function(d, k){ if (d) d.classList.toggle("on", k === i); });
-  }
-  var scrollTimer = null;
-  anchors.forEach(function(a, i){ a.addEventListener("click", function(){ setActive(i); dispatch(i); }); });
-  if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if (!en.isIntersecting) return;
-        var i = sections.indexOf(en.target);
-        if (i < 0 || i === T.active) return;
-        setActive(i);
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(function(){ dispatch(i); }, 350);
-      });
-    }, { rootMargin: "-35% 0px -60% 0px" });
-    sections.forEach(function(s){ io.observe(s); });
-  }
+  var ticking = false;
+  window.addEventListener("scroll", function(){ if (!ticking) { ticking = true; requestAnimationFrame(track); } }, { passive: true });
+  window.addEventListener("resize", function(){ measure(); track(); });
+  if ("ResizeObserver" in window) new ResizeObserver(function(){ measure(); track(); }).observe(col);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ measure(); track(); });
 
   // Opening and closing projects with the browser's Back and Forward buttons
   function projectFromHash(){ var m = /^#project-(.+)$/.exec(location.hash); return m ? bySlug[m[1]] : null; }
@@ -563,22 +471,11 @@
   });
 
   /* ---------- start ---------- */
-  measure();
   var linked = projectFromHash();
-  var start = Math.max(0, stations.findIndex(function(s){ return "#" + s.id === location.hash || (linked && s.id === "projects"); }));
+  var startAt = stations.findIndex(function(s){ return "#" + s.id === location.hash || (linked && s.id === "projects"); });
   // Links like darrenke.com/#projects: the sections didn't exist yet when the browser looked for them
-  if (start > 0) { root.style.scrollBehavior = "auto"; sections[start].scrollIntoView(); root.style.scrollBehavior = ""; }
-  setActive(start);
-  T.at = start; T.x = xFor(start); place();
-  T.dir = start >= N - 1 ? -1 : 1; T.target = T.at;
-  doors(true); T.dwellUntil = performance.now() + 1200;
-  setPaused(T.paused);
-  requestAnimationFrame(frame);
+  if (startAt > 0) { root.style.scrollBehavior = "auto"; sections[startAt].scrollIntoView(); root.style.scrollBehavior = ""; }
+  measure(); track();
   if (linked) openProject(linked, null, true);
-  window.addEventListener("resize", function(){ measure(); if (T.paused || reduce.matches) { T.x = xFor(T.at); place(); } });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ measure(); place(); });
-  col.addEventListener("toggle", sizeRail, true);
-  // Keeps the line the right length when photos load or semesters open
-  if ("ResizeObserver" in window) new ResizeObserver(function(){ sizeRail(); }).observe(col);
   }
 })();

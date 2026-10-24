@@ -34,9 +34,23 @@ window.SITE = {
     { label: "LinkedIn", url: "https://www.linkedin.com/in/darrenke" }
   ],
 
+  /* ---------- The journey ----------
+     The two ends of your line: the route map at the top runs from "from" to "to",
+     and so does the ticket next to your name. */
+  journey: { from: "Bronx", to: "New Haven" },
+
+  /* ---------- Your ticket ----------
+     The rows on the ticket next to your name. Add, remove or reorder rows. */
+  ticket: [
+    { label: "Passenger", value: "Darren Ke" },
+    { label: "Via",       value: "Mechanical Engineering, Yale" },
+    { label: "Class",     value: "2028" },
+    { label: "Status",    value: "Open to summer 2027 internships" }
+  ],
+
   /* ---------- By the numbers ----------
-     The black band right after your intro. Keep it to 3 or 4 numbers.
-     Delete the whole list to hide the band. */
+     The dark panel right after your intro. Keep it to 3 or 4 numbers.
+     Delete the whole list to hide the panel. */
   stats: [
     { value: "1,400+", label: "Air-quality sensors in the Gentner Lab network" },
     { value: "300+",   label: "Students at the alumni events I plan" },

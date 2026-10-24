@@ -42,7 +42,8 @@ Vercel Web Analytics is on: in the Vercel dashboard, open the project and click 
 | `images/` | Your photos | Yes |
 | `index.html` | Page skeleton, search-engine and link-preview info | Rarely (title and description at the top) |
 | `assets/site.css`, `assets/site.js` | Design and behavior | No |
-| `assets/fonts/` | Playfair Display, Source Serif 4 and JetBrains Mono, self-hosted (SIL Open Font License) | No |
+| `assets/ride.js` | The train along the bottom of the screen, Bronx to New Haven | No |
+| `assets/fonts/` | Big Shoulders Display, Public Sans and IBM Plex Mono, self-hosted (SIL Open Font License) | No |
 | `404.html` | The "station not in service" page | No |
 | `vercel.json` | Hosting settings and security headers | No |
 | `scripts/build.mjs` | Checks `content.js` before each update goes live | No |
