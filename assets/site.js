@@ -78,29 +78,25 @@
   function entry(title, org, points){ return h("div", { class: "entry" }, h("h3", null, title), org ? h("p", { class: "org" }, org) : null, bullets(points)); }
 
   /* ---------- pages ---------- */
+  // Contact buttons with icons: email, then each link in content.js (LinkedIn gets its "in" mark)
+  var ICONS = {
+    email: '<svg viewBox="0 0 20 20"><rect x="2.75" y="4.75" width="14.5" height="10.5" rx="1.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.25 5.5L10 10.75l6.75-5.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    linkedin: '<svg viewBox="0 0 20 20"><path fill="currentColor" d="M3.6 7.4h2.9V16H3.6zM5.05 3.2a1.65 1.65 0 1 1 0 3.3 1.65 1.65 0 0 1 0-3.3zM8.4 7.4h2.75v1.18h.04c.38-.72 1.32-1.48 2.71-1.48 2.9 0 3.43 1.9 3.43 4.38V16h-2.86v-4.16c0-.99-.02-2.27-1.38-2.27-1.39 0-1.6 1.08-1.6 2.2V16H8.4z"/></svg>'
+  };
+  function iconButton(kind, href, label, cls){
+    var mark = h("span", { class: "btn-ico", "aria-hidden": "true" }); mark.innerHTML = ICONS[kind] || "";
+    return h("a", Object.assign({ class: "btn" + (cls ? " " + cls : ""), href: href }, ext(href)), ICONS[kind] ? mark : null, label);
+  }
+
   function home(){
     var facts = arr(S.facts).filter(function(f){ return f.value; });
-    var listed = projects.filter(function(p){ return p.featured; }).concat(projects.filter(function(p){ return !p.featured; }));
-    var now = research.filter(function(r){ return r.current; })[0] || research[0];
     return h("div", { class: "home" },
-      h("div", { class: "home-hero" }, h("h1", { class: "statement", tabindex: "-1" }, h("span", { class: "vh" }, (S.name || "") + ": "), S.statement || S.name)),
-      facts.length ? h("div", { class: "facts" }, facts.map(function(f, i){
-        return h("div", { class: "fact" }, h("p", { class: "label" }, h("span", { class: "index" }, pad(i + 1)), f.label), h("p", null, f.value));
-      })) : null,
-      listed.length ? h("section", { class: "section", "aria-labelledby": "work-h" },
-        h("div", { class: "section-head" }, h("h2", { id: "work-h" }, "Selected work"), inner("/projects", "more", "All projects")),
-        h("ul", { class: "work-list" }, listed.slice(0, 4).map(function(p, i){
-          return h("li", { class: "work-item" }, h("a", { class: "work-link", href: "/projects/" + p._slug, "data-link": true },
-            h("span", { class: "index" }, pad(i + 1)),
-            h("span", { class: "w-title" }, p.title),
-            h("span", { class: "w-meta" }, [p.context, p.dates].filter(Boolean).join(" · ")),
-            h("span", { class: "w-go", "aria-hidden": "true" }, "View →")));
-        }))) : null,
-      now ? h("section", { class: "section", "aria-labelledby": "now-h" },
-        h("div", { class: "section-head" }, h("h2", { id: "now-h" }, now.current ? "Current research" : "Research"), inner("/research", "more", "Research")),
-        h("div", { class: "feature" },
-          h("div", { class: "f-meta" }, h("p", { class: "dates" }, now.dates), now.current ? h("p", { class: "status" }, "Current") : null),
-          h("div", { class: "f-body" }, h("h3", null, now.org), h("p", null, now.summary || arr(now.points)[0])))) : null);
+      h("div", { class: "home-hero" },
+        h("h1", { class: "statement", tabindex: "-1" }, h("span", { class: "vh" }, (S.name || "") + ": "), S.statement || S.name),
+        facts.length ? h("dl", { class: "home-facts" }, facts.map(function(f){ return h("div", null, h("dt", { class: "label" }, f.label), h("dd", null, f.value)); })) : null,
+        h("div", { class: "actions home-actions" },
+          email ? iconButton("email", "mailto:" + email, "Email", "primary") : null,
+          arr(S.links).map(function(l){ return iconButton(/linkedin\.com/i.test(l.url) ? "linkedin" : "", l.url, l.label); }))));
   }
 
   function about(){

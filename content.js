@@ -31,17 +31,17 @@ window.SITE = {
   photo: "headshot.png",     // Shown on the About page. Upload it next to index.html with this exact name.
 
   /* ---------- Home page ---------- */
-  statement: "Mechanical engineering student at Yale. I design and build things, especially for transportation.",
+  statement: "Mechanical engineering student at Yale. I design and build mechanical systems, and use research to discover how materials and machines behave.",
   facts: [
-    { label: "Currently", value: "Lead undergraduate researcher, Yale Nanoprobe Lab" },
-    { label: "Studying",  value: "B.S. Mechanical Engineering, Yale, 2028" },
-    { label: "Seeking",   value: "Summer 2027 internships in design, manufacturing and research" }
+    { label: "Seeking", value: "Summer 2027 internships in design, manufacturing and research" }
   ],
+  // The Email and LinkedIn buttons under the statement come from "email" and "links" above.
 
   /* ---------- About ---------- */
   about: [
     "I'm an undergraduate at Yale studying mechanical engineering, with a certificate in Energy Studies. I like designing and building things, especially for transportation.",
-    "Right now I lead an undergraduate research project in Yale's Nanoprobe Lab on how glass fractures under high-speed impact, and I'm an engineer and treasurer on Yale's autonomous rover team."
+    "Right now I lead an undergraduate research project in Yale's Nanoprobe Lab on how glass fractures under high-speed impact, and I'm an engineer and treasurer on Yale's autonomous rover team.",
+    "Please check out my projects, read about my interests, or get in touch to connect and chat!"
   ],
   experience: [
     {
@@ -148,8 +148,7 @@ window.SITE = {
      image      a photo, like "images/launcher.jpg". "" until you have one.
      reasoning  your design decisions. Give one an image and a
                 point: [percent from left, percent from top] and a line is
-                drawn from the text to that spot on the photo.
-     featured   true puts the project on the home page. */
+                drawn from the text to that spot on the photo. */
   projects: [
     {
       title: "Pneumatic Pellet Launcher",
@@ -158,7 +157,6 @@ window.SITE = {
       context: "Yale Nanoprobe Lab",
       dates: "Jun 2026 – Present",
       tags: ["CAD", "Machining", "Waterjet", "LabVIEW", "Pneumatics"],
-      featured: true,
       image: "",
       points: [
         "Lead development and continuous improvement of a pneumatic high-speed impact tester using an integrated system of compressed air, an actuated ball valve and a solenoid, firing pellets at around 100 m/s",
@@ -176,7 +174,6 @@ window.SITE = {
       context: "Yale robotics rover team",
       dates: "Jan 2025 – Present",
       tags: ["FEA", "CAD", "3D printing", "CNC"],
-      featured: false,
       image: "",
       points: [
         "Lead a 30-member robotics team toward a competition-ready rover by securing a $15,000 budget, managing funds, reviewing the bill of materials and setting project milestones",
@@ -195,7 +192,6 @@ window.SITE = {
       context: "MENG 1105 Mechanical Design",
       dates: "2026",
       tags: ["CAD", "FMEA", "DFA", "Prototyping"],
-      featured: false,
       image: "",
       points: [
         "Developed a foot-actuated cutting device using a four-bar linkage, a pulley system and an elastic return mechanism",
