@@ -1,18 +1,17 @@
 /* =====================================================================
    WEBSITE CONTENT
-   Edit this file to change what your site says. You never need to
-   touch any other file.
+   Everything the site says lives in this file. You never need to touch
+   any other file.
 
    How to edit:
    - Change the text between the quote marks "like this".
-   - Items in a list are separated by commas. A list of several things,
-     like courses, goes inside square brackets: ["One", "Two", "Three"]
-   - To add another item to a list (a job, project, skill...), copy a
-     whole { ... } block, paste it after a comma, and change the text.
+   - Items in a list are separated by commas. A list goes inside square
+     brackets: ["One", "Two", "Three"]
+   - To add an item (a project, a role, a course...), copy a whole
+     { ... } block, paste it after a comma, and change the text.
    - To remove an item, delete its whole { ... } block and its comma.
-   - A placeholder looks like "[Your role]". Anything still in square
-     brackets is hidden on the site until you replace it, brackets and all.
-   - Lines starting with // are notes. The site ignores them.
+   - Anything still written as "[like this]" is hidden on the site until
+     you replace it, brackets and all.
    - On GitHub: open this file, click the pencil icon, edit, then click
      "Commit changes". The site updates in about a minute.
    - Made a typo? The update simply won't go live, and your site stays
@@ -21,90 +20,35 @@
 
 window.SITE = {
 
-  /* ---------- The basics ---------- */
-  name: "Darren Ke",                          // Shown in the footer
-  headline: "Hello, my name is Darren Ke!",   // The big greeting at the top
-  image: "headshot.png",     // Your photo. Upload it next to index.html with this exact name. Hidden until it exists.
-  bio: "I am an undergraduate at Yale University studying Mechanical Engineering with a certificate in Energy studies. I love to design and build new things, especially transportation related projects! Check out my projects, read about my interests, and reach out to connect!",
-
+  /* ---------- Basics ---------- */
+  name: "Darren Ke",
+  role: "Mechanical Engineering, Yale University",
   email: "darren.ke@yale.edu",
-  //resumePdf: "resume.pdf",   // Upload a PDF with this name and remove the // to show a Resume button
+  location: "New Haven, Connecticut",
   links: [
-    { label: "Email",    url: "mailto:darren.ke@yale.edu" },
     { label: "LinkedIn", url: "https://www.linkedin.com/in/darrenke" }
   ],
+  photo: "headshot.png",     // Shown on the About page. Upload it next to index.html with this exact name.
 
-  /* ---------- The journey ----------
-     The two ends of your line: the route map at the top runs from "from" to "to",
-     and so does the ticket next to your name. */
-  journey: { from: "Bronx", to: "New Haven" },
-
-  /* ---------- Your ticket ----------
-     The rows on the ticket next to your name. Add, remove or reorder rows. */
-  ticket: [
-    { label: "Passenger", value: "Darren Ke" },
-    { label: "Via",       value: "Mechanical Engineering, Yale" },
-    { label: "Class",     value: "2028" },
-    { label: "Status",    value: "Open to summer 2027 internships" }
+  /* ---------- Home page ---------- */
+  statement: "Mechanical engineering student at Yale. I design and build things, especially for transportation.",
+  facts: [
+    { label: "Currently", value: "Lead undergraduate researcher, Yale Nanoprobe Lab" },
+    { label: "Studying",  value: "B.S. Mechanical Engineering, Yale, 2028" },
+    { label: "Seeking",   value: "Summer 2027 internships in design, manufacturing and research" }
   ],
 
-  /* ---------- By the numbers ----------
-     The dark panel right after your intro. Keep it to 3 or 4 numbers.
-     Delete the whole list to hide the panel. */
-  stats: [
-    { value: "1,400+", label: "Air-quality sensors in the Gentner Lab network" },
-    { value: "300+",   label: "Students at the alumni events I plan" },
-    { value: "$5",     label: "Saved per unit by my outdoor sensor enclosures" }
+  /* ---------- About ---------- */
+  about: [
+    "I'm an undergraduate at Yale studying mechanical engineering, with a certificate in Energy Studies. I like designing and building things, especially for transportation.",
+    "Right now I lead an undergraduate research project in Yale's Nanoprobe Lab on how glass fractures under high-speed impact, and I'm an engineer and treasurer on Yale's autonomous rover team."
   ],
-
-  /* ---------- Stations on your line (the map at the top) ----------
-     Each station shows the list below with the same id, so the
-     "research" station shows research: [ ... ].
-     "short" is the label used on phones. Reorder, rename or delete
-     stations here. */
-  stations: [
-    { id: "about",      label: "About",      short: "About" },
-    { id: "education",  label: "Education",  short: "School" },
-    { id: "projects",   label: "Projects",   short: "Projects" },
-    { id: "research",   label: "Research",   short: "Labs" },
-    { id: "experience", label: "Experience", short: "Work" },
-    { id: "skills",     label: "Skills",     short: "Skills" },
-    { id: "contact",    label: "Contact",    short: "Contact" }
-  ],
-
-  /* ---------- Research (newest first) ---------- */
-  research: [
-    {
-      title: "Project Researcher",
-      org: "Nanoprobe Lab",
-      dates: "Fall 2026 – Present",
-      points: [
-        "Running high-speed impact tests on glass with a pneumatic launcher to study how cracks form",
-        "CAD, Materials Science, LabVIEW"
-      ]
-    },
-    {
-      title: "Research Assistant",
-      org: "Gentner Lab, Yale Engineering",
-      dates: "Sep 2025 – Present",
-      points: [
-        "Comparing indoor and outdoor air quality across New Haven with a network of 1,400+ PurpleAir, AirGradient, Zigbee and Aranet sensors",
-        "Building a long-term data collection system with Python and Raspberry Pi that stores more data at a lower monthly cost",
-        "Wrote a step-by-step guide that lets non-specialists assemble Raspberry Pi, Home Assistant and sensor packages",
-        "Designed CAD enclosures that protect outdoor sensors in extreme weather, saving at least $5 per unit"
-      ]
-    }
-  ],
-
-  /* ---------- Experience (newest first) ---------- */
   experience: [
     {
       title: "Teaching Assistant, Materials Science",
       org: "Yale School of Engineering",
       dates: "Fall 2026",
-      points: [
-        "Teaching assistant for an introductory materials science course"
-      ]
+      points: ["Teaching assistant for an introductory materials science course"]
     },
     {
       title: "Class of 2028 Delegate",
@@ -112,92 +56,181 @@ window.SITE = {
       dates: "Sep 2025 – Present",
       points: [
         "Connect a class of 1,500+ students with alumni and report on University updates and alumni events",
-        "Plan events for 300+ students and 75+ alumni at a time, opening up mentorship, career and fundraising opportunities"
-      ]
-    },
-    {
-      title: "Drives Engineer",
-      org: "Yale Robotics Rover",
-      dates: "Jan 2025 – Present",
-      points: [
-        "Find and fix design faults with sub-team leads in CAD: wheel treads, fillets to reduce stress concentrations, and component mates",
-        "Selected machine elements, then machined and built the rover's suspension and chassis"
+        "Plan events for 300+ students and 75+ alumni at a time"
       ]
     },
     {
       title: "Office Aide",
-      org: "Pierson College Head of College Office",
+      org: "Pierson College Administrative Office",
       dates: "Jan 2025 – Present",
       points: [
-        "Run front-office operations: phones, student support and hospitality at college events",
-        "Set up and run major events including Convocation, Family Receptions and Commencement"
+        "Serve as a primary point of contact for students and staff, and coordinate with university administrators on operational and logistical needs",
+        "Lead execution of major college events such as move-in and commencement"
+      ]
+    }
+  ],
+  skills: [
+    { group: "Design and fabrication", items: ["Onshape", "SolidWorks", "Raspberry Pi"] },
+    { group: "Programming and software", items: ["Python", "C", "C++", "MATLAB", "Excel", "LabVIEW"] },
+    { group: "Manufacturing and machining", items: ["Lathe", "CNC", "Additive manufacturing", "Waterjet", "Laser cutting", "Hand tools"] },
+    { group: "Languages", items: ["English", "Mandarin (native)", "Spanish (coursework)", "Korean (coursework)"] }
+  ],
+
+  /* ---------- Education ---------- */
+  education: [
+    {
+      school: "Yale University",
+      place: "New Haven, CT",
+      degree: "B.S. Mechanical Engineering (ABET-accredited)",
+      dates: "2024 – May 2028 (expected)",
+      details: ["Energy Studies Certificate", "GPA 3.67 / 4.0"],
+      distinctions: [
+        "Science, Technology and Research Scholars (STARS) Fellowship",
+        "American Society of Mechanical Engineers",
+        "American Institute of Aeronautics and Astronautics",
+        "Yale Fishing"
+      ],
+      /* Courses go inside [ ], separated by commas. Newest term first. */
+      semesters: [
+        { term: "Fall 2026", courses: [
+          "MENG 3125: Machine Elements and Manufacturing Processes",
+          "MENG 3422: Fluid Mechanics",
+          "ENVE 1200: Intro to Environmental Engineering",
+          "KREN 1300: Intermediate Korean",
+          "MATH 2220: Linear Algebra"
+        ] },
+        { term: "Spring 2026", courses: [
+          "ENAS 1940: Ordinary & Partial Differential Equations",
+          "MENG 1105: Mechanical Design",
+          "MENG 2050: Computer Aided Engineering",
+          "MENG 2511: Thermodynamics for Mechanical Engineers",
+          "PHIL 1126: Early Modern Philosophy from Descartes to Kant",
+          "HUMS S3411: Life Worth Living"
+        ] },
+        { term: "Fall 2025", courses: [
+          "ECE 2000: Electronics",
+          "ENAS 1300: Computing for Engineering and Scientists",
+          "MENG 2311: Strength and Deformation",
+          "MENG 2615: Materials Science"
+        ] },
+        { term: "Spring 2025", courses: [
+          "ENAS 151: Multivariable Calculus for Engineers",
+          "HIST 081: Displacement in Asia after WW2",
+          "KREN 120: Elementary Korean II",
+          "PHYS 166L: General Physics Laboratory",
+          "PHYS 181: University Physics II"
+        ] },
+        { term: "Fall 2024", courses: [
+          "KREN 110: Elementary Korean I",
+          "MATH 115: Calculus II",
+          "PHYS 165L: General Physics Laboratory",
+          "PHYS 180: University Physics I",
+          "ENGL S114: Writing Seminar I",
+          "MATH S102: Approximation and Prediction I"
+        ] }
       ]
     }
   ],
 
-  /* ---------- Projects ----------
-     Each project shows as a preview card. Clicking it opens a full
-     project window with everything below.
+  /* ---------- Resume ----------
+     To update: upload your new PDF over resume.pdf on GitHub (same name),
+     and change "updated" below. */
+  resume: {
+    pdf: "resume.pdf",
+    preview: "assets/resume-preview.webp",
+    updated: "October 2026"
+  },
 
-     tags       the filter buttons above your projects (they appear once
-                you have two or more projects)
-     image      the card photo, like "images/knife.jpg". "" until you have one.
-     role       your role, team size and timeframe
-     points     short highlights, shown on the card and in the window
-     overview   paragraphs at the top of the window
-     reasoning  your design decisions, one box each. Give one an image
-                and the box gets a line pointing to a spot on it:
-                  image    the picture, like "images/knife-linkage.jpg"
-                  caption  a short label under the picture
-                  point    where the line lands, as
-                           [percent from left, percent from top].
-                           [50, 50] is the center. Leave it out to aim
-                           at the image's edge instead.
-     links      buttons, like { label: "Report (PDF)", url: "files/knife-report.pdf" }
+  /* ---------- Engineering projects ----------
+     Each project gets its own page, at darrenke.com/projects/ plus its title
+     in lowercase with dashes (for example /projects/pneumatic-pellet-launcher).
 
-     Every project also gets its own link to share, made from its title:
-     darrenke.com/#project-foot-operated-kitchen-knife */
+     image      a photo, like "images/launcher.jpg". "" until you have one.
+     reasoning  your design decisions. Give one an image and a
+                point: [percent from left, percent from top] and a line is
+                drawn from the text to that spot on the photo.
+     featured   true puts the project on the home page. */
   projects: [
     {
-      title: "Foot Operated Kitchen Knife",
-      summary: "A foot-powered cutting device that lets people with limited hand dexterity slice food on their own.",
-      tags: ["SolidWorks", "FEA"],
+      title: "Pneumatic Pellet Launcher",
+      summary: "A pneumatic high-speed impact tester that fires pellets at around 100 m/s for research on how glass fractures.",
+      role: "Mechanical design and systems development",
+      context: "Yale Nanoprobe Lab",
+      dates: "Jun 2026 – Present",
+      tags: ["CAD", "Machining", "Waterjet", "LabVIEW", "Pneumatics"],
+      featured: true,
       image: "",
-      role: "Team of 4 · MENG 1105 Mechanical Design · Spring 2026",
       points: [
-        "Designed for people with arthritis and limited hand dexterity",
-        "Drove the design with a House of Quality, FMEA and DFA",
+        "Lead development and continuous improvement of a pneumatic high-speed impact tester using an integrated system of compressed air, an actuated ball valve and a solenoid, firing pellets at around 100 m/s",
+        "Designed and manufactured a glass sample fixture using CAD, waterjet cutting and milling to reduce energy interference in high-speed impacts, improving test reliability by about 5%",
+        "Developing hardware and LabVIEW controls to automate sample-stage positioning across multiple samples and holders"
+      ],
+      overview: [],
+      reasoning: [],
+      links: []
+    },
+    {
+      title: "Autonomous Rover",
+      summary: "A competition rover built by a 30-member student robotics team, where I work as an engineer and treasurer.",
+      role: "Engineer and treasurer",
+      context: "Yale robotics rover team",
+      dates: "Jan 2025 – Present",
+      tags: ["FEA", "CAD", "3D printing", "CNC"],
+      featured: false,
+      image: "",
+      points: [
+        "Lead a 30-member robotics team toward a competition-ready rover by securing a $15,000 budget, managing funds, reviewing the bill of materials and setting project milestones",
+        "Identified fault areas and reduced peak stress concentrations in the rover wheel using FEA-driven optimization",
+        "Rapid fabrication and prototype iteration with 3D printing and CNC milling to support continuous design validation and testing"
+      ],
+      overview: [],
+      reasoning: [],
+      links: []
+    },
+    {
+      title: "Foot-Actuated Kitchen Knife",
+      aliases: ["foot-operated-kitchen-knife"],   // its address on the previous version of the site
+      summary: "A foot-powered cutting device that lets people with limited hand dexterity slice food on their own.",
+      role: "Mechanical design",
+      context: "MENG 1105 Mechanical Design",
+      dates: "2026",
+      tags: ["CAD", "FMEA", "DFA", "Prototyping"],
+      featured: false,
+      image: "",
+      points: [
+        "Developed a foot-actuated cutting device using a four-bar linkage, a pulley system and an elastic return mechanism",
+        "Reached an estimated 100 N output force through iterative CAD design, fabrication and testing",
         "Built an aluminum prototype that cut a banana in a live demo"
       ],
       overview: [
-        "Cutting food is a basic kitchen task that many people with limited hand dexterity can't do safely on their own. About half of people over 70 struggle with tasks that need fine motor control, so many rely on caregivers to prepare food. Our team of four set out to design a knife you work with your foot.",
+        "Cutting food is a basic kitchen task that many people with limited hand dexterity can't do safely on their own. About half of people over 70 struggle with tasks that need fine motor control, so many rely on caregivers to prepare food. The goal was a knife you work with your foot.",
         "A House of Quality ranked what users needed most: a low input force, safety, adjustment to different counter heights, and durability. The alternatives fall short: rocker knives and mandolines still take hand strength, a mandoline puts fingers right next to the blade, and food processors need power and can't cut even slices.",
-        "The final design uses a foot pedal, a string wound on a threaded cylinder, and a parallelogram linkage that carries the blade. The aluminum prototype cut a banana in a live demo and met our targets for input force, output force, endurance, safety and height range. It missed the weight target by a wide margin, so cutting weight is the top item for a next version."
+        "The final aluminum prototype met its targets for input force, output force, endurance, safety and height range. It missed the weight target by a wide margin, so cutting weight is the top item for a next version."
       ],
       reasoning: [
         {
           title: "Aluminum and brackets, not welds",
-          text: "We built the frame from aluminum: strong, nonporous, cheaper and easier to source than other metals. Joining it with brackets instead of welding kept every joint adjustable, and making the arms, base and bearings one standard size meant fewer different parts to order.",
+          text: "The frame is aluminum: strong, nonporous, cheaper and easier to source than other metals. Joining it with brackets instead of welding kept every joint adjustable, and making the arms, base and bearings one standard size meant fewer different parts to order.",
           image: ""
         },
         {
           title: "Carrying force with a string",
-          text: "To get force from the pedal to the blade we compared a Bowden cable, a rigid rod, a hydraulic line, and a pulley and string. The final design runs a string around a cylinder, which we threaded to add surface area, and with it friction, so the string wouldn't slip.",
+          text: "Options for getting force from the pedal to the blade included a Bowden cable, a rigid rod, a hydraulic line, and a pulley and string. The final design runs a string around a cylinder, threaded to add surface area, and with it friction, so the string wouldn't slip.",
           image: ""
         },
         {
           title: "What the FMEA predicted",
-          text: "Before building, we listed how the design could fail: linkage arms buckling under compression, pivots sticking at the top or bottom of the stroke, the blade not reaching the board, clamps loosening, and the return spring sticking. It gave us confidence the string would hold and warned that the spring probably wouldn't work, which testing confirmed.",
+          text: "Before building, the failure modes were listed: linkage arms buckling under compression, pivots sticking at the top or bottom of the stroke, the blade not reaching the board, clamps loosening, and the return spring sticking. It gave confidence the string would hold and warned that the spring probably wouldn't work, which testing confirmed.",
           image: ""
         },
         {
           title: "Fixes from testing",
-          text: "The arms slid off the base, so we 3D-printed caps and drilled them through to lock the arms in place. The cutting force was strong enough to lift the base off the table. The new clamps blocked the arms until we cut them down, and we removed a whole arm that added weight without doing any work.",
+          text: "The arms slid off the base, so 3D-printed caps were drilled through to lock them in place. The cutting force was strong enough to lift the base off the table, the new clamps blocked the arms until they were cut down, and a whole arm was removed because it added weight without doing any work.",
           image: ""
         },
         {
           title: "What a second version would change",
-          text: "Cut weight first: the solid cylinder could be hollow or printed in PLA. Add a hard stop so the linkage can't fold flat, where the force needed to reset it spikes, and design a better elastic return. And agree on one unit system across the team from day one.",
+          text: "Cut weight first: the solid cylinder could be hollow or printed in PLA. Add a hard stop so the linkage can't fold flat, where the force needed to reset it spikes, and design a better elastic return.",
           image: ""
         }
       ],
@@ -205,82 +238,35 @@ window.SITE = {
     }
   ],
 
-  /* ---------- Skills (grouped) ---------- */
-  skills: [
-    { group: "CAD & Design",       items: ["SolidWorks", "Onshape"] },
-    { group: "Analysis",           items: ["MATLAB", "FEA", "Excel"] },
-    { group: "Fabrication",        items: ["Mill", "Lathe", "CNC", "Additive Manufacturing", "Hand Tools"] },
-    { group: "Programming & Data", items: ["Python", "C++", "C", "Raspberry Pi", "Home Assistant", "LabVIEW", "LoggerPro"] },
-    { group: "Languages",          items: ["English", "Mandarin (Native)", "Spanish (coursework)", "Korean (coursework)"] }
-  ],
-
-  /* ---------- Education ---------- */
-  education: [
+  /* ---------- Research ---------- */
+  research: [
     {
-      school: "Yale University",
-      degree: "B.S. Mechanical Engineering (ABET‑accredited)",
-      dates: "2024 – 2028",
-      details: ["Certificate in Energy Studies", "GPA: 3.67"],
-      honors: ["STARS I Research Fellow", "Buckley Institute Fellow", "Yale Entrepreneurial Society Fellow"],
-      activities: ["AIAA", "ASME", "St. Thomas More Undergraduate Council"],
-      /* Each semester is a row that opens to show its courses.
-         Newest first. Courses go inside [ ], separated by commas. */
-      semesters: [
-        {
-          term: "Fall 2026",
-          courses: [
-            "MENG 3125: Machine Elements and Manufacturing Processes",
-            "MENG 3422: Fluid Mechanics",
-            "ENVE 1200: Intro to Environmental Engineering",
-            "KREN 1300: Intermediate Korean",
-            "MATH 2220: Linear Algebra"
-          ]
-        },
-        {
-          term: "Spring 2026",
-          courses: [
-            "ENAS 1940: Ordinary & Partial Differential Equations",
-            "MENG 1105: Mechanical Design",
-            "MENG 2050: Computer Aided Engineering",
-            "MENG 2511: Thermodynamics for Mechanical Engineers",
-            "PHIL 1126: Early Modern Philosophy from Descartes to Kant",
-            "HUMS S3411: Life Worth Living"
-          ]
-        },
-        {
-          term: "Fall 2025",
-          courses: [
-            "ECE 2000: Electronics",
-            "ENAS 1300: Computing for Engineering and Scientists",
-            "MENG 2311: Strength and Deformation",
-            "MENG 2615: Materials Science"
-          ]
-        },
-        {
-          term: "Spring 2025",
-          courses: [
-            "ENAS 151: Multivariable Calculus for Engineers",
-            "HIST 081: Displacement in Asia after WW2",
-            "KREN 120: Elementary Korean II",
-            "PHYS 166L: General Physics Laboratory",
-            "PHYS 181: University Physics II"
-          ]
-        },
-        {
-          term: "Fall 2024",
-          courses: [
-            "KREN 110: Elementary Korean I",
-            "MATH 115: Calculus II",
-            "PHYS 165L: General Physics Laboratory",
-            "PHYS 180: University Physics I",
-            "ENGL S114: Writing Seminar I",
-            "MATH S102: Approximation and Prediction I"
-          ]
-        }
-      ]
+      title: "Lead Undergraduate Researcher",
+      org: "Yale Nanoprobe Lab",
+      dates: "Jun 2026 – Present",
+      current: true,
+      summary: "Leading a Corning Inc.-funded project on crack morphology in oxide glasses under dynamic, high-speed loading.",
+      points: [
+        "Measure coefficients of restitution across three oxide glass compositions at multiple impact velocities to quantify how energy dissipation relates to composition",
+        "Use GIXRD, high-speed imaging and microscopy to characterize coatings, residual stresses and surface conditions, and correlate them with fracture response"
+      ],
+      methods: ["GIXRD", "High-speed imaging", "Microscopy", "LabVIEW"]
+    },
+    {
+      title: "Lab Assistant",
+      org: "Gentner Lab, Yale School of Engineering",
+      dates: "Sep 2025 – Jan 2026",
+      current: false,
+      summary: "Indoor and outdoor air-quality monitoring across homes in New Haven.",
+      points: [
+        "Developed a data acquisition system sampling 150+ homes with Raspberry Pi, Python and air-quality sensors, increasing storage capacity and cutting potential monthly costs by more than $14",
+        "Designed and fabricated protective sensor enclosures and compact support structures with CAD and additive manufacturing, improving weather resistance and cutting potential fabrication costs by $10 per unit",
+        "Led a study of how QuantAQ sensor orientation affects PM10 and PM2.5 measurements, using MATLAB, to improve experimental reliability"
+      ],
+      methods: ["Python", "Raspberry Pi", "MATLAB", "CAD", "Additive manufacturing"]
     }
   ],
 
   /* ---------- Contact ---------- */
-  contactNote: "Open to summer 2027 design, manufacturing, and research internships. Email is the fastest way to reach me, or connect on LinkedIn."
+  contactNote: "Open to summer 2027 internships in design, manufacturing and research. Email is the fastest way to reach me."
 };

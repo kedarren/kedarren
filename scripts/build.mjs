@@ -34,17 +34,17 @@ const placeholder = (s) => /^\s*\[[^\]]*\]\s*$/.test(s);
 const files = [];
 (function walk(v, key) {
   if (typeof v === "string") {
-    if (["image", "photo", "resumePdf"].includes(key) && v && !placeholder(v) && !/^https?:/i.test(v)) files.push(v);
+    if (["image", "photo", "pdf", "preview"].includes(key) && v && !placeholder(v) && !/^https?:/i.test(v)) files.push(v);
   } else if (Array.isArray(v)) v.forEach((x) => walk(x, key));
   else if (v && typeof v === "object") Object.keys(v).forEach((k) => walk(v[k], k));
 })(S);
 for (const f of files) {
   if (!existsSync(join(root, f.replace(/^\//, "")))) console.warn(`! content.js mentions ${f}, but that file isn't uploaded yet. The site will leave it out.`);
 }
-for (const st of S.stations || []) {
-  const builtIn = ["about", "experience", "projects", "skills", "education", "contact"];
-  if (!builtIn.includes(st.id) && !Array.isArray(S[st.id])) console.warn(`! The "${st.id}" station has no matching ${st.id}: [ ... ] list, so its section will be empty.`);
-}
+const slug = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const projectSlugs = (S.projects || []).filter((p) => p && p.title && !placeholder(p.title)).map((p) => slug(p.title));
+const dupes = projectSlugs.filter((s, i) => projectSlugs.indexOf(s) !== i);
+if (dupes.length) console.warn(`! Two projects share the same title (${dupes.join(", ")}), so they share one page address. Rename one of them.`);
 
 // ---- 2. Copy everything visitors need into dist/
 const keepOut = new Set(["dist", "scripts", "node_modules", "README.md", "vercel.json", "package.json"]);
@@ -66,8 +66,10 @@ if (process.env.VERCEL) {
 }
 
 const today = new Date().toISOString().slice(0, 10);
+const pages = ["/", "/about", "/education", "/resume", "/projects", "/research", "/contact"].concat(projectSlugs.map((s) => "/projects/" + s));
 writeFileSync(join(out, "sitemap.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${SITE_URL}/</loc><lastmod>${today}</lastmod></url>\n</urlset>\n`);
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  pages.map((p) => `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod></url>`).join("\n") + `\n</urlset>\n`);
 
 const count = (k) => (Array.isArray(S[k]) ? S[k].length : 0);
-console.log(`✓ content.js looks good: ${count("stations")} stations, ${count("projects")} project(s), ${count("research")} research and ${count("experience")} experience entries.`);
+console.log(`✓ content.js looks good: ${count("projects")} project(s), ${count("research")} research and ${count("experience")} experience entries, ${pages.length} pages in the sitemap.`);
