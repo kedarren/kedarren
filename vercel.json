@@ -6,8 +6,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/(about|education|resume|projects|research|contact)", "destination": "/index.html" },
-    { "source": "/projects/:slug", "destination": "/index.html" }
+    { "source": "/(about|education|resume|projects|research|contact)", "destination": "/" },
+    { "source": "/projects/:slug", "destination": "/" }
   ],
   "headers": [
     {
